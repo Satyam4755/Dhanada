@@ -256,3 +256,11 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+fixtures = [
+	"SIF Asset Management Company",
+	"SIF Fund Manager",
+	"SIF Investment Stategy Subcategory",
+	"SIF Scheme",
+	"SIF Scheme Plan",
+	"SIF Scheme Plan Performance",
+]

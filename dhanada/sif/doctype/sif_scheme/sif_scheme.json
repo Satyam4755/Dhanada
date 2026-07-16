@@ -1,0 +1,277 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "autoincrement",
+ "creation": "2026-07-16 14:04:31.386100",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "scheme_name",
+  "amc",
+  "column_break_adah",
+  "sebi_code",
+  "is_active",
+  "is_active_for_subscription",
+  "section_break_uzsh",
+  "nfo_start_date",
+  "nfo_end_date",
+  "column_break_uhfc",
+  "nfo_allotment_date",
+  "scheme_reopen_date",
+  "column_break_ewwe",
+  "scheme_type",
+  "investment_strategy",
+  "column_break_xjhp",
+  "scheme_subcategory",
+  "risk_band",
+  "section_break_nvye",
+  "minimum_subscription",
+  "section_break_xmqh",
+  "scheme_objective",
+  "exit_load",
+  "scheme_allocation_tab",
+  "allocations",
+  "fund_managers_tab",
+  "managers",
+  "documents_tab",
+  "isid_url",
+  "kim_url",
+  "sai_url",
+  "column_break_etkx",
+  "factsheet_url",
+  "monthly_portfolio_disclosure_url"
+ ],
+ "fields": [
+  {
+   "fieldname": "sebi_code",
+   "fieldtype": "Data",
+   "label": "Sebi Code",
+   "unique": 1
+  },
+  {
+   "fieldname": "scheme_name",
+   "fieldtype": "Data",
+   "label": "Scheme Name"
+  },
+  {
+   "fieldname": "investment_strategy",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Investment Strategy",
+   "options": "\nEquity\nHybrid\nDebt",
+   "reqd": 1
+  },
+  {
+   "fieldname": "scheme_type",
+   "fieldtype": "Select",
+   "label": "Scheme Type",
+   "options": "\nOpen Ended\nClose Ended\nInterval",
+   "sort_options": 1
+  },
+  {
+   "fieldname": "scheme_subcategory",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Scheme Subcategory",
+   "options": "SIF Investment Stategy Subcategory",
+   "reqd": 1
+  },
+  {
+   "fieldname": "risk_band",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Risk Band",
+   "non_negative": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "scheme_objective",
+   "fieldtype": "Long Text",
+   "label": "Scheme Objective",
+   "reqd": 1
+  },
+  {
+   "fieldname": "exit_load",
+   "fieldtype": "Small Text",
+   "label": "Exit Load"
+  },
+  {
+   "default": "1000000.00",
+   "fieldname": "minimum_subscription",
+   "fieldtype": "Currency",
+   "label": "Minimum Subscription",
+   "non_negative": 1,
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "nfo_start_date",
+   "fieldtype": "Date",
+   "label": "NFO Start Date"
+  },
+  {
+   "fieldname": "nfo_end_date",
+   "fieldtype": "Date",
+   "label": "NFO End Date"
+  },
+  {
+   "fieldname": "nfo_allotment_date",
+   "fieldtype": "Date",
+   "label": "NFO Allotment Date"
+  },
+  {
+   "fieldname": "scheme_reopen_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Scheme Reopen Date"
+  },
+  {
+   "fieldname": "section_break_uzsh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_uhfc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ewwe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_xjhp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_xmqh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_adah",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amc",
+   "fieldtype": "Link",
+   "label": "AMC",
+   "options": "SIF Asset Management Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fund_managers_tab",
+   "fieldtype": "Tab Break",
+   "label": "Fund Managers"
+  },
+  {
+   "fieldname": "managers",
+   "fieldtype": "Table",
+   "label": "Managers",
+   "options": "SIF Scheme Fund Manager"
+  },
+  {
+   "fieldname": "documents_tab",
+   "fieldtype": "Tab Break",
+   "label": "Documents"
+  },
+  {
+   "fieldname": "isid_url",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "iSID URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "kim_url",
+   "fieldtype": "Data",
+   "label": "KIM URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "sai_url",
+   "fieldtype": "Data",
+   "label": "SAI URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "factsheet_url",
+   "fieldtype": "Data",
+   "label": "Factsheet URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "monthly_portfolio_disclosure_url",
+   "fieldtype": "Data",
+   "label": "Monthly Portfolio Disclosure URL",
+   "options": "URL"
+  },
+  {
+   "fieldname": "scheme_allocation_tab",
+   "fieldtype": "Tab Break",
+   "label": "Scheme Allocation"
+  },
+  {
+   "fieldname": "allocations",
+   "fieldtype": "Table",
+   "label": "Allocations",
+   "options": "SIF Scheme Allocation"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Is Active?"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active_for_subscription",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Is Active for Subscription?"
+  },
+  {
+   "fieldname": "section_break_nvye",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_etkx",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-16 16:01:21.936016",
+ "modified_by": "Administrator",
+ "module": "SIF",
+ "name": "SIF Scheme",
+ "naming_rule": "Autoincrement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "scheme_name"
+}

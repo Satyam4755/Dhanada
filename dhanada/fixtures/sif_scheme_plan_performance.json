@@ -1,0 +1,23 @@
+[
+ {
+  "10_years": 200.0,
+  "1_day": 1.2,
+  "1_month": 3.4,
+  "1_week": -3.4,
+  "1_year": 12.0,
+  "2_years": 22.0,
+  "3_months": 5.4,
+  "3_years": 55.0,
+  "5_years": 100.0,
+  "6_months": 6.7,
+  "docstatus": 0,
+  "doctype": "SIF Scheme Plan Performance",
+  "modified": "2026-07-16 15:50:54.513238",
+  "name": "INF754K30052",
+  "performance_date": "2026-07-15",
+  "scheme_plan": "INF754K30052",
+  "since_inception": 250.0,
+  "title": null,
+  "year_to_date": -11.0
+ }
+]

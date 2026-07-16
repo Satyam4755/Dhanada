@@ -1,0 +1,192 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:isin",
+ "creation": "2026-07-16 14:37:59.620164",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "scheme",
+  "column_break_ibiv",
+  "full_name",
+  "section_break_ptvb",
+  "type",
+  "column_break_haet",
+  "option",
+  "column_break_tycr",
+  "sub_option",
+  "period",
+  "section_break_exqr",
+  "nav",
+  "column_break_qkda",
+  "nav_date",
+  "column_break_buml",
+  "performance",
+  "section_break_enoa",
+  "isin",
+  "column_break_ruug",
+  "sif_code",
+  "column_break_vkyj",
+  "rta_code"
+ ],
+ "fields": [
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type",
+   "options": "\nRegular\nDirect",
+   "reqd": 1
+  },
+  {
+   "fieldname": "option",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Option",
+   "options": "\nGrowth\nIDCW",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sub_option",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Sub Option",
+   "mandatory_depends_on": "eval: doc.option ===\"IDCW\";",
+   "options": "\nPayout\nReinvestment\nTransfer"
+  },
+  {
+   "fieldname": "isin",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "ISIN",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "sif_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "SIF Code"
+  },
+  {
+   "fieldname": "rta_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "RTA Code"
+  },
+  {
+   "fieldname": "nav",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "NAV",
+   "non_negative": 1,
+   "precision": "4"
+  },
+  {
+   "fieldname": "nav_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "NAV Date"
+  },
+  {
+   "fieldname": "scheme",
+   "fieldtype": "Link",
+   "label": "Scheme",
+   "options": "SIF Scheme",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_ibiv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Programmatically derived from - Scheme - Plan - Option - Period - Sub Option",
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "read_only": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_ptvb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_haet",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_tycr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "period",
+   "fieldtype": "Select",
+   "label": "Period",
+   "options": "\nDaily\nWeekly\nMonthly\nHalf Yearly\nAnnual"
+  },
+  {
+   "fieldname": "section_break_exqr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_qkda",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_enoa",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_ruug",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_vkyj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_buml",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "performance",
+   "fieldtype": "Link",
+   "label": "Performance",
+   "options": "SIF Scheme Plan Performance"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-16 15:46:10.879284",
+ "modified_by": "Administrator",
+ "module": "SIF",
+ "name": "SIF Scheme Plan",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "full_name"
+}

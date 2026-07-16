@@ -1,0 +1,94 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:registration_number",
+ "creation": "2026-07-16 14:34:16.413403",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sif_name",
+  "amc_name",
+  "rta",
+  "is_active",
+  "column_break_xcxy",
+  "code",
+  "registration_number"
+ ],
+ "fields": [
+  {
+   "fieldname": "amc_name",
+   "fieldtype": "Data",
+   "label": "AMC Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "code",
+   "fieldtype": "Data",
+   "label": "Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "rta",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "RTA",
+   "options": "\nCAMS\nKfintech",
+   "reqd": 1
+  },
+  {
+   "fieldname": "registration_number",
+   "fieldtype": "Data",
+   "label": "Registration Number",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "label": "Is Active?"
+  },
+  {
+   "fieldname": "column_break_xcxy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sif_name",
+   "fieldtype": "Data",
+   "label": "SIF Name",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-16 15:36:03.638495",
+ "modified_by": "Administrator",
+ "module": "SIF",
+ "name": "SIF Asset Management Company",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "sif_name"
+}

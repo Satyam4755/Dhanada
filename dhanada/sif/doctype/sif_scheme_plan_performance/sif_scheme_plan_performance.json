@@ -1,0 +1,198 @@
+{
+ "actions": [],
+ "allow_bulk_edit": 1,
+ "allow_rename": 1,
+ "autoname": "field:scheme_plan",
+ "creation": "2026-07-16 15:07:57.502345",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "scheme_plan",
+  "column_break_euln",
+  "title",
+  "column_break_ldzb",
+  "performance_date",
+  "section_break_vrmc",
+  "1_day",
+  "1_week",
+  "1_month",
+  "3_months",
+  "6_months",
+  "year_to_date",
+  "column_break_xrbb",
+  "1_year",
+  "2_years",
+  "3_years",
+  "5_years",
+  "10_years",
+  "since_inception"
+ ],
+ "fields": [
+  {
+   "fieldname": "scheme_plan",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Scheme Plan",
+   "options": "SIF Scheme Plan",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "1_day",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "1 Day",
+   "precision": "2"
+  },
+  {
+   "fieldname": "performance_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Performance Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "1_week",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "1 Week",
+   "precision": "2"
+  },
+  {
+   "fieldname": "1_month",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "1 Month",
+   "precision": "2"
+  },
+  {
+   "fieldname": "3_months",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "3 Months",
+   "precision": "2"
+  },
+  {
+   "fieldname": "6_months",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "6 Months",
+   "precision": "2"
+  },
+  {
+   "fieldname": "year_to_date",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Year to Date",
+   "precision": "2"
+  },
+  {
+   "fieldname": "1_year",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "1 Year",
+   "precision": "2"
+  },
+  {
+   "fieldname": "2_years",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "2 Years",
+   "precision": "2"
+  },
+  {
+   "fieldname": "3_years",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "3 Years",
+   "precision": "2"
+  },
+  {
+   "fieldname": "5_years",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "5 Years",
+   "precision": "2"
+  },
+  {
+   "fieldname": "10_years",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "10 Years",
+   "precision": "2"
+  },
+  {
+   "fieldname": "since_inception",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Since Inception",
+   "precision": "2"
+  },
+  {
+   "fetch_from": "scheme_plan.full_name",
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_euln",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_ldzb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vrmc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_xrbb",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-07-16 15:54:59.750767",
+ "modified_by": "Administrator",
+ "module": "SIF",
+ "name": "SIF Scheme Plan Performance",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "show_title_field_in_link": 1,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
+}
