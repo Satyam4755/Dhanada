@@ -26,3 +26,16 @@ jobs:
             chore
             ci
           requireScope: false
+
+      - name: Check issue reference in title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title
+            if (!/ #\d+$/.test(title)) {
+              core.setFailed(
+                'PR title must end with the issue number.\n' +
+                'Correct:   feat(auth): add user profile #42\n' +
+                'Incorrect: feat(auth): add user profile'
+              )
+            }

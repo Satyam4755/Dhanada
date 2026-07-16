@@ -1,3 +1,5 @@
+> **PR title format:** `type(scope): description #123`
+
 ## Description
 
 <!-- What does this change do? Why is it needed? -->
