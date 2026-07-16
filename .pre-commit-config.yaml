@@ -63,6 +63,11 @@ repos:
                 dhanada/public/js/lib/.*
             )$
 
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.1.0
+    hooks:
+      - id: commitizen
+
 ci:
     autoupdate_schedule: weekly
     skip: []
