@@ -66,10 +66,35 @@ class DataMapper:
             return "Hybrid"
         return "Equity" # Fallback
 
+    def _parse_flat_plan(self, node: Dict, sebi_code: str, dataset: SyncDataset):
+        if not isinstance(node, dict) or "isin_code" not in node:
+            return
+            
+        name = node.get("name", "").lower()
+        p_type = "Direct" if "direct" in name else "Regular"
+        p_opt = "IDCW" if "idcw" in name or "dividend" in name or "income distribution" in name else "Growth"
+        
+        p_sub = None
+        if "payout" in name: p_sub = "Payout"
+        elif "reinvestment" in name: p_sub = "Reinvestment"
+        elif "transfer" in name: p_sub = "Transfer"
+        
+        self._create_plan_record(node, sebi_code, p_type, p_opt, p_sub, dataset)
+
     def _extract_plans(self, plans_dict: Dict, sebi_code: str, dataset: SyncDataset):
         """Recursively extract plans from the nested structure."""
-        
-        # Level 1: type (regular / direct)
+        if not plans_dict:
+            return
+            
+        # Format 1: Flat/List structure with "additional_plans" at the root
+        if "name" in plans_dict or "additional_plans" in plans_dict:
+            self._parse_flat_plan(plans_dict, sebi_code, dataset)
+            if "additional_plans" in plans_dict and isinstance(plans_dict["additional_plans"], list):
+                for p in plans_dict["additional_plans"]:
+                    self._parse_flat_plan(p, sebi_code, dataset)
+            return
+
+        # Format 2: Nested dictionary structure (regular -> growth)
         for plan_type_key, type_dict in plans_dict.items():
             if not isinstance(type_dict, dict): continue
             
@@ -84,7 +109,6 @@ class DataMapper:
                 # Check if this is a leaf node (contains isin_code directly)
                 if "isin_code" in option_dict:
                     self._create_plan_record(option_dict, sebi_code, mapped_type, mapped_option, None, dataset)
-                    continue
                     
                 # Level 3: sub_option (payout, reinvestment, transfer, unknown)
                 for sub_opt_key, sub_dict in option_dict.items():
@@ -106,8 +130,55 @@ class DataMapper:
                     # Handle additional_plans array inside unknown or other nodes
                     if "additional_plans" in sub_dict and isinstance(sub_dict["additional_plans"], list):
                         for add_plan in sub_dict["additional_plans"]:
-                            if "isin_code" in add_plan:
-                                self._create_plan_record(add_plan, sebi_code, mapped_type, mapped_option, mapped_sub, dataset)
+                            self._parse_flat_plan(add_plan, sebi_code, dataset)
+
+    def _parse_managers(self, raw_managers_list: List[Dict], dataset: SyncDataset) -> List[SchemeFundManager]:
+        parsed_managers = []
+        
+        # Regex helpers to strip labels and titles, and extract standard dates
+        label_pattern = re.compile(r'(?i)(Debt|Equity|Arbitrage)\s+Portion\s*[:\-]?\s*|\(for.*?portion\)|\bFM\s*\d+\s*[:\-]\s*')
+        title_pattern = re.compile(r'^(Mr\.|Ms\.|Mrs\.|Dr\.|Mr|Ms|Mrs|Dr)\s*', flags=re.IGNORECASE)
+        date_pattern = re.compile(r'(\d{2}-[a-zA-Z]{3}-\d{4}|\d{2}-\d{2}-\d{4}|[a-zA-Z]+\s+\d{2},\s+\d{4})')
+        
+        for fm in raw_managers_list:
+            raw_from = fm.get("from", "") or ""
+            raw_name = fm.get("name", "") or ""
+            
+            # Split chunks by commas, semicolons, 'and', newlines, or large space gaps
+            name_chunks = [c.strip() for c in re.split(r';|,|\band\b|\n|\s{2,}', raw_name, flags=re.IGNORECASE) if c.strip()]
+            from_chunks = [c.strip() for c in re.split(r';|,|\band\b|\n|\s{2,}', raw_from, flags=re.IGNORECASE) if c.strip()]
+            
+            # Extract dates sequentially
+            dates = []
+            for fc in from_chunks:
+                match = date_pattern.search(fc)
+                dates.append(match.group(1) if match else None)
+                
+            for i, nc in enumerate(name_chunks):
+                # Clean up labels and titles
+                clean_name = label_pattern.sub('', nc).strip()
+                clean_name = title_pattern.sub('', clean_name).strip()
+                if not clean_name: continue
+                
+                # Match dates to names robustly
+                date_str = None
+                if len(dates) == len(name_chunks):
+                    date_str = dates[i]
+                elif len(dates) == 1:
+                    date_str = dates[0]
+                elif len(dates) > i:
+                    date_str = dates[i]
+                    
+                parsed_date = self._parse_date(date_str) if date_str else None
+                
+                dataset.fund_managers.append(FundManager(manager_name=clean_name))
+                parsed_managers.append(SchemeFundManager(
+                    manager_name=clean_name,
+                    from_date=parsed_date,
+                    is_active=True
+                ))
+                
+        return parsed_managers
 
     def _create_plan_record(self, node: Dict, sebi_code: str, p_type: str, p_opt: str, p_sub: Optional[str], dataset: SyncDataset):
         isin = node.get("isin_code")
@@ -143,25 +214,27 @@ class DataMapper:
                 if isinstance(inv_limits, dict):
                     min_sub = self._parse_currency(inv_limits.get("minimum_application_amount"))
                 
-                managers = []
-                for fm in raw_scheme.get("fund_managers", []):
-                    # AMFI format stores concatenated manager names in "name" and tenure in "from".
-                    # For simplicity, we store the full string. In Frappe, this string becomes the Fund Manager name.
-                    fm_name = fm.get("name")
-                    if fm_name:
-                        # Create unique Fund Manager canonical record
-                        dataset.fund_managers.append(FundManager(manager_name=fm_name))
-                        # Create link record for child table
-                        managers.append(SchemeFundManager(
-                            manager_name=fm_name,
-                            is_active=True
-                        ))
+                managers = self._parse_managers(raw_scheme.get("fund_managers", []), dataset)
                 
                 category_name = raw_scheme.get("category", "Uncategorized")
                 dataset.subcategories.append(Subcategory(subcategory_name=category_name))
                 
                 raw_sif = raw_scheme.get("sif_name")
                 sif_name = str(raw_sif).replace(" SIF", "").strip() if raw_sif else None
+
+                # Extract AMC
+                if sif_name:
+                    sebi_code = raw_scheme.get("sebi_code", "")
+                    code_fallback = sebi_code.split("/")[-1] if "/" in sebi_code else sif_name.upper()[:4]
+                    
+                    dataset.amcs.append(AMC(
+                        code=code_fallback,
+                        amc_name=f"{sif_name} Asset Management",
+                        sif_name=sif_name,
+                        registration_number=code_fallback, # Unavailable in JSON, fallback to code
+                        rta="CAMS", # Unavailable at root level, safely default to empty
+                        is_active=True
+                    ))
 
                 dataset.schemes.append(Scheme(
                     sebi_code=raw_scheme.get("sebi_code"),
@@ -219,12 +292,28 @@ class DataMapper:
                     since_inception=self._parse_float(ret.get("since_launch")), # Mismatch handled
                 ))
 
-        # Remove duplicates from subcategories and fund_managers lists
+        # Remove duplicates from subcategories, fund_managers, and amcs lists
         # We do this cleanly by turning them into dicts keyed by their unique names
         unique_subs = {sub.subcategory_name: sub for sub in dataset.subcategories}
         dataset.subcategories = list(unique_subs.values())
         
         unique_fms = {fm.manager_name: fm for fm in dataset.fund_managers}
         dataset.fund_managers = list(unique_fms.values())
+        
+        unique_amcs = {amc.sif_name: amc for amc in dataset.amcs if amc.sif_name}
+        dataset.amcs = list(unique_amcs.values())
+
+        print(f"DEBUG: len(dataset.amcs) = {len(dataset.amcs)}")
+        print(f"DEBUG: len(dataset.schemes) = {len(dataset.schemes)}")
+        print(f"DEBUG: len(dataset.scheme_plans) = {len(dataset.scheme_plans)}")
+        print(f"DEBUG: len(dataset.fund_managers) = {len(dataset.fund_managers)}")
+        
+        print("DEBUG: First 10 AMC objects:")
+        for amc in dataset.amcs[:10]:
+            print(f"  AMC: {amc}")
+            
+        print("DEBUG: First 10 Scheme objects:")
+        for scheme in dataset.schemes[:10]:
+            print(f"  Scheme: sebi_code={scheme.sebi_code}, sif_name={scheme.sif_name}")
 
         return dataset

@@ -18,6 +18,7 @@ class DataImporter:
         Imports the dataset idempotently.
         Follows strictly the order required for SIF DocTypes.
         """
+        print(f"DEBUG: len(dataset.amcs) = {len(dataset.amcs)}")
         for amc in dataset.amcs:
             self._upsert_amc(amc)
             
@@ -27,6 +28,7 @@ class DataImporter:
         for fm in dataset.fund_managers:
             self._upsert_fund_manager(fm)
             
+        print(f"DEBUG: len(dataset.schemes) = {len(dataset.schemes)}")
         for scheme in dataset.schemes:
             self._upsert_scheme(scheme)
             
@@ -41,6 +43,7 @@ class DataImporter:
 
     def _upsert_amc(self, amc):
         try:
+            print(f"DEBUG: upsert_amc: code={amc.code}, amc_name={amc.amc_name}, sif_name={amc.sif_name}, reg={amc.registration_number}")
             exists = frappe.db.exists("SIF Asset Management Company", {"code": amc.code}) or \
                      frappe.db.exists("SIF Asset Management Company", {"registration_number": amc.registration_number})
             
@@ -64,10 +67,14 @@ class DataImporter:
                         "rta": amc.rta,
                         "is_active": int(amc.is_active)
                     })
+                    print(doc.as_dict())
                     doc.insert(ignore_permissions=True)
                 self.stats["created"] += 1
         except Exception as e:
             self.stats["errors"] += 1
+            import traceback
+            print(f"DEBUG: Exception in _upsert_amc for {amc.code}:")
+            traceback.print_exc()
             log_error(f"Failed to upsert AMC {amc.code}: {e}", exc_info=True)
 
     def _upsert_subcategory(self, sub):
@@ -106,14 +113,13 @@ class DataImporter:
 
     def _upsert_scheme(self, scheme):
         try:
-            if not self.dry_run:
-                frappe.db.begin()
 
             amc_doc = None
             if scheme.sif_name:
                 amc_doc = frappe.db.get_value("SIF Asset Management Company", {"sif_name": scheme.sif_name}, "name")
 
             if not amc_doc:
+                print(f"DEBUG: amc_doc is None: sebi_code={scheme.sebi_code}, scheme_name={scheme.scheme_name}, sif_name={scheme.sif_name}")
                 log_warning(f"Skipping Scheme {scheme.sebi_code} - Missing AMC for SIF Name: {scheme.sif_name}")
                 self.stats["skipped"] += 1
                 if not self.dry_run:
@@ -254,8 +260,6 @@ class DataImporter:
 
     def _upsert_performance(self, perf):
         try:
-            if not self.dry_run:
-                frappe.db.begin()
                 
             plan_doc = frappe.db.exists("SIF Scheme Plan", {"sif_code": perf.sif_code})
             if not plan_doc:
