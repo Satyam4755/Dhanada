@@ -95,8 +95,7 @@
    "fieldtype": "Link",
    "label": "Scheme",
    "options": "SIF Scheme",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "column_break_ibiv",
@@ -161,8 +160,13 @@
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2026-07-16 15:46:10.879284",
+ "links": [
+  {
+   "link_doctype": "SIF Scheme Plan Performance",
+   "link_fieldname": "scheme_plan"
+  }
+ ],
+ "modified": "2026-07-17 14:00:07.967199",
  "modified_by": "Administrator",
  "module": "SIF",
  "name": "SIF Scheme Plan",

@@ -149,23 +149,16 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"dhanada.tasks.all"
-# 	],
-# 	"daily": [
-# 		"dhanada.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"dhanada.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"dhanada.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"dhanada.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"cron": {
+		"0 1 * * 2,3,4,5,6": [
+			"dhanada.sif.sync.scheduler.sync_nav_performance"
+		],
+		"0 2 * * 0": [
+			"dhanada.sif.sync.scheduler.sync_scheme_details"
+		]
+	}
+}
 
 # Testing
 # -------
