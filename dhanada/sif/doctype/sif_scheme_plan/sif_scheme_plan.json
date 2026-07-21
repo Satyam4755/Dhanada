@@ -125,7 +125,7 @@
    "fieldname": "period",
    "fieldtype": "Select",
    "label": "Period",
-   "options": "\nDaily\nWeekly\nMonthly\nHalf Yearly\nAnnual"
+   "options": "\nDaily\nWeekly\nFortnightly\nMonthly\nQuarterly\nHalf Yearly\nAnnual\nPeriodic"
   },
   {
    "fieldname": "section_break_exqr",

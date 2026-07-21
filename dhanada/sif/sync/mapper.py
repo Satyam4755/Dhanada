@@ -76,7 +76,7 @@ class DataMapper:
         
         p_sub = None
         if "payout" in name: p_sub = "Payout"
-        elif "reinvestment" in name: p_sub = "Reinvestment"
+        elif "reinvest" in name: p_sub = "Reinvestment"
         elif "transfer" in name: p_sub = "Transfer"
         
         self._create_plan_record(node, sebi_code, p_type, p_opt, p_sub, dataset)
@@ -110,6 +110,11 @@ class DataMapper:
                 if "isin_code" in option_dict:
                     self._create_plan_record(option_dict, sebi_code, mapped_type, mapped_option, None, dataset)
                     
+                # Check for additional_plans array under Growth or direct options
+                if "additional_plans" in option_dict and isinstance(option_dict["additional_plans"], list):
+                    for add_plan in option_dict["additional_plans"]:
+                        self._create_plan_record(add_plan, sebi_code, mapped_type, mapped_option, None, dataset)
+                    
                 # Level 3: sub_option (payout, reinvestment, transfer, unknown)
                 for sub_opt_key, sub_dict in option_dict.items():
                     if not isinstance(sub_dict, dict): continue
@@ -130,7 +135,7 @@ class DataMapper:
                     # Handle additional_plans array inside unknown or other nodes
                     if "additional_plans" in sub_dict and isinstance(sub_dict["additional_plans"], list):
                         for add_plan in sub_dict["additional_plans"]:
-                            self._parse_flat_plan(add_plan, sebi_code, dataset)
+                            self._create_plan_record(add_plan, sebi_code, mapped_type, mapped_option, mapped_sub, dataset)
 
     def _parse_managers(self, raw_managers_list: List[Dict], dataset: SyncDataset) -> List[SchemeFundManager]:
         parsed_managers = []
@@ -183,12 +188,29 @@ class DataMapper:
         if not isin:
             return
             
+        # Map time_period to Frappe Select options
+        period_val = node.get("time_period")
+        frappe_period = None
+        if period_val:
+            period_map = {
+                "daily": "Daily",
+                "weekly": "Weekly",
+                "fortnightly": "Fortnightly",
+                "monthly": "Monthly",
+                "quarterly": "Quarterly",
+                "half_yearly": "Half Yearly",
+                "annual": "Annual",
+                "periodic": "Periodic"
+            }
+            frappe_period = period_map.get(period_val)
+            
         dataset.scheme_plans.append(SchemePlan(
             isin=isin,
             sebi_code=sebi_code,
             type=p_type,
             option=p_opt,
             sub_option=p_sub,
+            period=frappe_period,
             sif_code=node.get("amfi_code"),
             rta_code=node.get("rta_code")
         ))
