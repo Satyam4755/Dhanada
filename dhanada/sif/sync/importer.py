@@ -240,18 +240,19 @@ class DataImporter:
 
     def _update_nav(self, nav_update):
         try:
-            plan_doc = frappe.db.exists("SIF Scheme Plan", {"sif_code": nav_update.sif_code})
-            if not plan_doc:
+            matching_plans = frappe.get_all("SIF Scheme Plan", filters={"sif_code": nav_update.sif_code}, pluck="name")
+            if not matching_plans:
                 log_warning(f"Skipping NAV update for sif_code {nav_update.sif_code} - Scheme Plan not found")
                 self.stats["skipped"] += 1
                 return
 
-            if not self.dry_run:
-                doc = frappe.get_doc("SIF Scheme Plan", plan_doc)
-                doc.nav = nav_update.nav
-                doc.nav_date = nav_update.nav_date
-                doc.save(ignore_permissions=True)
-            self.stats["updated"] += 1
+            for plan_doc in matching_plans:
+                if not self.dry_run:
+                    doc = frappe.get_doc("SIF Scheme Plan", plan_doc)
+                    doc.nav = nav_update.nav
+                    doc.nav_date = nav_update.nav_date
+                    doc.save(ignore_permissions=True)
+                self.stats["updated"] += 1
 
             if not self.dry_run:
                 frappe.db.commit()
@@ -263,38 +264,38 @@ class DataImporter:
 
     def _upsert_performance(self, perf):
         try:
-                
-            plan_doc = frappe.db.exists("SIF Scheme Plan", {"sif_code": perf.sif_code})
-            if not plan_doc:
+            matching_plans = frappe.get_all("SIF Scheme Plan", filters={"sif_code": perf.sif_code}, pluck="name")
+            if not matching_plans:
                 log_warning(f"Skipping Performance for sif_code {perf.sif_code} - Missing Scheme Plan")
                 self.stats["skipped"] += 1
                 return
 
-            perf_doc = None
-            exists = frappe.db.exists("SIF Scheme Plan Performance", {"scheme_plan": plan_doc})
-            if exists:
-                if not self.dry_run:
-                    doc = frappe.get_doc("SIF Scheme Plan Performance", exists)
-                    self._map_perf_fields(doc, perf)
-                    doc.save(ignore_permissions=True)
-                    perf_doc = doc.name
-                self.stats["updated"] += 1
-            else:
-                if not self.dry_run:
-                    doc = frappe.new_doc("SIF Scheme Plan Performance")
-                    doc.scheme_plan = plan_doc
-                    self._map_perf_fields(doc, perf)
-                    doc.insert(ignore_permissions=True)
-                    perf_doc = doc.name
-                self.stats["created"] += 1
+            for plan_doc in matching_plans:
+                perf_doc = None
+                exists = frappe.db.exists("SIF Scheme Plan Performance", {"scheme_plan": plan_doc})
+                if exists:
+                    if not self.dry_run:
+                        doc = frappe.get_doc("SIF Scheme Plan Performance", exists)
+                        self._map_perf_fields(doc, perf)
+                        doc.save(ignore_permissions=True)
+                        perf_doc = doc.name
+                    self.stats["updated"] += 1
+                else:
+                    if not self.dry_run:
+                        doc = frappe.new_doc("SIF Scheme Plan Performance")
+                        doc.scheme_plan = plan_doc
+                        self._map_perf_fields(doc, perf)
+                        doc.insert(ignore_permissions=True)
+                        perf_doc = doc.name
+                    self.stats["created"] += 1
 
-            # Update the bidirectional link on the Scheme Plan
-            if not self.dry_run and perf_doc:
-                plan = frappe.get_doc("SIF Scheme Plan", plan_doc)
-                if plan.performance != perf_doc:
-                    plan.performance = perf_doc
-                    plan.save(ignore_permissions=True)
-                    
+                # Update the bidirectional link on the Scheme Plan
+                if not self.dry_run and perf_doc:
+                    plan = frappe.get_doc("SIF Scheme Plan", plan_doc)
+                    if plan.performance != perf_doc:
+                        plan.performance = perf_doc
+                        plan.save(ignore_permissions=True)
+                        
             if not self.dry_run:
                 frappe.db.commit()
         except Exception as e:
