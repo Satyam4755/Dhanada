@@ -161,6 +161,8 @@ class DataImporter:
         doc.kim_url = scheme.kim_url
         doc.sai_url = scheme.sai_url
         doc.factsheet_url = scheme.factsheet_url
+
+
         doc.monthly_portfolio_disclosure_url = scheme.monthly_portfolio_disclosure_url
         
         doc.set("allocations", [])

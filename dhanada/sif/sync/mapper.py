@@ -138,45 +138,43 @@ class DataMapper:
         # Regex helpers to strip labels and titles, and extract standard dates
         label_pattern = re.compile(r'(?i)(Debt|Equity|Arbitrage)\s+Portion\s*[:\-]?\s*|\(for.*?portion\)|\bFM\s*\d+\s*[:\-]\s*')
         title_pattern = re.compile(r'^(Mr\.|Ms\.|Mrs\.|Dr\.|Mr|Ms|Mrs|Dr)\s*', flags=re.IGNORECASE)
-        date_pattern = re.compile(r'(\d{2}-[a-zA-Z]{3}-\d{4}|\d{2}-\d{2}-\d{4}|[a-zA-Z]+\s+\d{2},\s+\d{4})')
+        date_pattern = re.compile(r'(\d{2}-[a-zA-Z]{3}-\d{4}|\d{2}-\d{2}-\d{4}|[a-zA-Z]+\s+\d{2},\s+\d{4}|\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?)')
         
         for fm in raw_managers_list:
-            raw_from = fm.get("from", "") or ""
             raw_name = fm.get("name", "") or ""
+            raw_from = fm.get("from", "") or ""
+            raw_to = fm.get("to")
             
-            # Split chunks by commas, semicolons, 'and', newlines, or large space gaps
-            name_chunks = [c.strip() for c in re.split(r';|,|\band\b|\n|\s{2,}', raw_name, flags=re.IGNORECASE) if c.strip()]
-            from_chunks = [c.strip() for c in re.split(r';|,|\band\b|\n|\s{2,}', raw_from, flags=re.IGNORECASE) if c.strip()]
+            # Clean up labels and titles from name
+            clean_name = label_pattern.sub('', raw_name).strip()
+            clean_name = title_pattern.sub('', clean_name).strip()
+            if not clean_name: continue
             
-            # Extract dates sequentially
-            dates = []
-            for fc in from_chunks:
-                match = date_pattern.search(fc)
-                dates.append(match.group(1) if match else None)
-                
-            for i, nc in enumerate(name_chunks):
-                # Clean up labels and titles
-                clean_name = label_pattern.sub('', nc).strip()
-                clean_name = title_pattern.sub('', clean_name).strip()
-                if not clean_name: continue
-                
-                # Match dates to names robustly
-                date_str = None
-                if len(dates) == len(name_chunks):
-                    date_str = dates[i]
-                elif len(dates) == 1:
-                    date_str = dates[0]
-                elif len(dates) > i:
-                    date_str = dates[i]
+            # Truncate to 140 chars to satisfy Frappe Link field limits for malformed upstream data
+            clean_name = clean_name[:140].strip()
+            
+            # Parse dates
+            parsed_from_date = None
+            if raw_from:
+                match_from = date_pattern.search(str(raw_from))
+                if match_from:
+                    parsed_from_date = self._parse_date(match_from.group(1))
                     
-                parsed_date = self._parse_date(date_str) if date_str else None
-                
-                dataset.fund_managers.append(FundManager(manager_name=clean_name))
-                parsed_managers.append(SchemeFundManager(
-                    manager_name=clean_name,
-                    from_date=parsed_date,
-                    is_active=True
-                ))
+            parsed_to_date = None
+            if raw_to:
+                match_to = date_pattern.search(str(raw_to))
+                if match_to:
+                    parsed_to_date = self._parse_date(match_to.group(1))
+
+            dataset.fund_managers.append(FundManager(manager_name=clean_name))
+            parsed_managers.append(SchemeFundManager(
+                manager_name=clean_name,
+                manager_type=fm.get("type"),
+                role_or_portion=fm.get("role_or_portion"),
+                from_date=parsed_from_date,
+                to_date=parsed_to_date,
+                is_active=True if not parsed_to_date else False
+            ))
                 
         return parsed_managers
 
@@ -214,7 +212,16 @@ class DataMapper:
                 if isinstance(inv_limits, dict):
                     min_sub = self._parse_currency(inv_limits.get("minimum_application_amount"))
                 
-                managers = self._parse_managers(raw_scheme.get("fund_managers", []), dataset)
+                managers = self._parse_managers(raw_scheme.get("fund_managers") or [], dataset)
+                
+                allocations = []
+                for alloc in (raw_scheme.get("asset_allocation") or []):
+                    if isinstance(alloc, dict):
+                        allocations.append(SchemeAllocation(
+                            allocation_type=alloc.get("allocation_type") or "Unknown Allocation Type",
+                            minimum_allocation_percentage=self._parse_float(alloc.get("minimum_percentage")),
+                            maximum_allocation_percentage=self._parse_float(alloc.get("maximum_percentage"))
+                        ))
                 
                 category_name = raw_scheme.get("category", "Uncategorized")
                 dataset.subcategories.append(Subcategory(subcategory_name=category_name))
@@ -245,10 +252,21 @@ class DataMapper:
                     scheme_type=scheme_type,
                     scheme_subcategory=category_name,
                     risk_band=None, # 'potential_risk_class' is text, not integer
-                    scheme_objective=raw_scheme.get("fund_type", ""),
+                    scheme_objective=raw_scheme.get("scheme_objective") or "Objective not provided",
+                    riskometer_at_launch=raw_scheme.get("riskometer_at_launch"),
+                    riskometer_as_on_date=raw_scheme.get("riskometer_as_on_date"),
+                    face_value=raw_scheme.get("face_value"),
                     exit_load=raw_scheme.get("exit_load"),
                     minimum_subscription=min_sub,
+                    nfo_start_date=self._parse_date(raw_scheme.get("nfo_open_date")),
+                    nfo_end_date=self._parse_date(raw_scheme.get("nfo_close_date")),
+                    nfo_allotment_date=self._parse_date(raw_scheme.get("allotment_date")),
+                    scheme_reopen_date=self._parse_date(raw_scheme.get("reopen_date")),
+                    maturity_date=self._parse_date(raw_scheme.get("maturity_date")),
+                    benchmark_tier_1=raw_scheme.get("benchmark_tier_1"),
+                    benchmark_tier_2=raw_scheme.get("benchmark_tier_2"),
                     is_active=True,
+                    allocations=allocations,
                     managers=managers
                 ))
                 

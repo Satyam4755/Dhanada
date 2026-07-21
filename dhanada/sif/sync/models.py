@@ -22,12 +22,14 @@ class FundManager:
 @dataclass
 class SchemeAllocation:
     allocation_type: str
-    minimum_allocation_percentage: float
-    maximum_allocation_percentage: float
+    minimum_allocation_percentage: Optional[float] = None
+    maximum_allocation_percentage: Optional[float] = None
 
 @dataclass
 class SchemeFundManager:
     manager_name: str
+    manager_type: Optional[str] = None
+    role_or_portion: Optional[str] = None
     from_date: Optional[date] = None
     to_date: Optional[date] = None
     is_active: bool = True
@@ -41,9 +43,15 @@ class Scheme:
     scheme_type: Optional[str]
     scheme_subcategory: str  # For linking to Subcategory
     risk_band: Optional[int]
-    scheme_objective: str
-    exit_load: Optional[str]
-    minimum_subscription: float
+    scheme_objective: Optional[str] = None
+    exit_load: Optional[str] = None
+    riskometer_at_launch: Optional[str] = None
+    riskometer_as_on_date: Optional[str] = None
+    face_value: Optional[str] = None
+    maturity_date: Optional[date] = None
+    benchmark_tier_1: Optional[str] = None
+    benchmark_tier_2: Optional[str] = None
+    minimum_subscription: float = 0.0
     nfo_start_date: Optional[date] = None
     nfo_end_date: Optional[date] = None
     nfo_allotment_date: Optional[date] = None
