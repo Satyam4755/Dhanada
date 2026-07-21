@@ -232,7 +232,7 @@ class DataMapper:
                         amc_name=f"{sif_name} Asset Management",
                         sif_name=sif_name,
                         registration_number=code_fallback, # Unavailable in JSON, fallback to code
-                        rta="CAMS", # Unavailable at root level, safely default to empty
+                        rta="", # Unavailable at root level, safely default to empty
                         is_active=True
                     ))
 
@@ -302,18 +302,5 @@ class DataMapper:
         
         unique_amcs = {amc.sif_name: amc for amc in dataset.amcs if amc.sif_name}
         dataset.amcs = list(unique_amcs.values())
-
-        print(f"DEBUG: len(dataset.amcs) = {len(dataset.amcs)}")
-        print(f"DEBUG: len(dataset.schemes) = {len(dataset.schemes)}")
-        print(f"DEBUG: len(dataset.scheme_plans) = {len(dataset.scheme_plans)}")
-        print(f"DEBUG: len(dataset.fund_managers) = {len(dataset.fund_managers)}")
-        
-        print("DEBUG: First 10 AMC objects:")
-        for amc in dataset.amcs[:10]:
-            print(f"  AMC: {amc}")
-            
-        print("DEBUG: First 10 Scheme objects:")
-        for scheme in dataset.schemes[:10]:
-            print(f"  Scheme: sebi_code={scheme.sebi_code}, sif_name={scheme.sif_name}")
 
         return dataset
