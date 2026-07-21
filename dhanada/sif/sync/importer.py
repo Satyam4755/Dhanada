@@ -117,6 +117,11 @@ class DataImporter:
                 self.stats["skipped"] += 1
                 return
 
+            if scheme.sebi_code.startswith("TEMP_"):
+                log_warning(f"Skipping Scheme {scheme.sebi_code} - Incomplete data (fallback SEBI code)")
+                self.stats["skipped"] += 1
+                return
+
             exists = frappe.db.exists("SIF Scheme", {"sebi_code": scheme.sebi_code})
             if exists:
                 if not self.dry_run:
