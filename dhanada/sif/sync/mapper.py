@@ -273,10 +273,10 @@ class DataMapper:
                     investment_strategy=investment_strategy,
                     scheme_type=scheme_type,
                     scheme_subcategory=category_name,
-                    risk_band=None, # 'potential_risk_class' is text, not integer
-                    scheme_objective=raw_scheme.get("scheme_objective") or "Objective not provided",
+                    risk_band=raw_scheme.get("riskometer_as_on_date"),
                     riskometer_at_launch=raw_scheme.get("riskometer_at_launch"),
-                    riskometer_as_on_date=raw_scheme.get("riskometer_as_on_date"),
+                    potential_risk_class=raw_scheme.get("potential_risk_class"),
+                    scheme_objective=raw_scheme.get("scheme_objective") or "Objective not provided",
                     face_value=raw_scheme.get("face_value"),
                     exit_load=raw_scheme.get("exit_load"),
                     minimum_subscription=min_sub,

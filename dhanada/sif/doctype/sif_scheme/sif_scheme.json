@@ -81,12 +81,21 @@
   },
   {
    "fieldname": "risk_band",
-   "fieldtype": "Int",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Risk Band",
-   "non_negative": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "riskometer_at_launch",
+   "fieldtype": "Data",
+   "label": "Riskometer At Launch"
+  },
+  {
+   "fieldname": "potential_risk_class",
+   "fieldtype": "Data",
+   "label": "Potential Risk Class"
   },
   {
    "fieldname": "scheme_objective",

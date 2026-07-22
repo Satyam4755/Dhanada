@@ -42,11 +42,11 @@ class Scheme:
     investment_strategy: str
     scheme_type: Optional[str]
     scheme_subcategory: str  # For linking to Subcategory
-    risk_band: Optional[int]
+    risk_band: Optional[str]
     scheme_objective: Optional[str] = None
     exit_load: Optional[str] = None
     riskometer_at_launch: Optional[str] = None
-    riskometer_as_on_date: Optional[str] = None
+    potential_risk_class: Optional[str] = None
     face_value: Optional[str] = None
     maturity_date: Optional[date] = None
     benchmark_tier_1: Optional[str] = None

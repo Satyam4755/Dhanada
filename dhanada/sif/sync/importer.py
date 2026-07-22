@@ -165,7 +165,9 @@ class DataImporter:
         doc.investment_strategy = scheme.investment_strategy
         doc.scheme_type = scheme.scheme_type
         doc.scheme_subcategory = scheme.scheme_subcategory
+        doc.riskometer_at_launch = scheme.riskometer_at_launch
         doc.risk_band = scheme.risk_band
+        doc.potential_risk_class = scheme.potential_risk_class
         doc.scheme_objective = scheme.scheme_objective
         doc.exit_load = scheme.exit_load
         doc.minimum_subscription = scheme.minimum_subscription
