@@ -118,11 +118,24 @@ class DataImporter:
                 return
 
             if scheme.sebi_code.startswith("TEMP_"):
-                log_warning(f"Skipping Scheme {scheme.sebi_code} - Incomplete data (fallback SEBI code)")
-                self.stats["skipped"] += 1
-                return
+                has_plans = getattr(self, "dataset", None) and any(p.sebi_code == scheme.sebi_code for p in self.dataset.scheme_plans)
+                if not has_plans:
+                    log_warning(f"Skipping Scheme {scheme.sebi_code} - Incomplete data (fallback SEBI code and no plans)")
+                    self.stats["skipped"] += 1
+                    return
 
             exists = frappe.db.exists("SIF Scheme", {"sebi_code": scheme.sebi_code})
+            
+            if not exists:
+                temp_exists = frappe.db.exists("SIF Scheme", {
+                    "scheme_name": scheme.scheme_name,
+                    "sebi_code": ["like", "TEMP_%"]
+                })
+                if temp_exists:
+                    if not self.dry_run:
+                        frappe.db.set_value("SIF Scheme", temp_exists, "sebi_code", scheme.sebi_code)
+                    exists = temp_exists
+
             if exists:
                 if not self.dry_run:
                     doc = frappe.get_doc("SIF Scheme", exists)
