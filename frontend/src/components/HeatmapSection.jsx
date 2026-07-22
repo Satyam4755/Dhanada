@@ -1,26 +1,72 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { heatmapData } from '../data/heatmapData';
 import HeatmapHeader from './HeatmapHeader';
 import CategoryTabs from './CategoryTabs';
 import SubCategoryTabs from './SubCategoryTabs';
 import HeatmapTable from './HeatmapTable';
 
-export default function HeatmapSection() {
-  const [timeFilter, setTimeFilter] = useState(4); // Default to showing 4 months (APR, MAY, JUN, JUL like screenshot) to fit well, but the prompt says 3M, 6M, 12M, All. Let's use 3M as default.
-  // Wait, let's fix the default to 3
-  const [activeCategory, setActiveCategory] = useState('equity');
-  const [activeSubCategory, setActiveSubCategory] = useState(1);
+export default function HeatmapSection({ fundsData = [] }) {
+  const [timeFilter, setTimeFilter] = useState('All'); 
+  const [activeCategory, setActiveCategory] = useState('');
+  const [activeSubCategory, setActiveSubCategory] = useState('');
 
-  // When category changes, reset sub-category to the first one available
+  // Process live fundsData into a hierarchical structure
+  const groupedData = useMemo(() => {
+    const dataMap = {};
+    fundsData.forEach(fund => {
+      // Use assetClass as parent, category as sub-category
+      // Skip funds without proper taxonomy
+      if (!fund.assetClass || !fund.category) return;
+      
+      const ac = fund.assetClass;
+      const cat = fund.category;
+
+      if (!dataMap[ac]) {
+        dataMap[ac] = { id: ac, label: ac, subCategories: {} };
+      }
+      if (!dataMap[ac].subCategories[cat]) {
+        dataMap[ac].subCategories[cat] = { id: cat, name: cat, funds: [] };
+      }
+      dataMap[ac].subCategories[cat].funds.push(fund);
+    });
+
+    // Convert to sorted arrays
+    const finalData = Object.values(dataMap).sort((a, b) => a.label.localeCompare(b.label));
+    finalData.forEach(ac => {
+      ac.subCategories = Object.values(ac.subCategories).sort((a, b) => a.name.localeCompare(b.name));
+    });
+
+    return finalData;
+  }, [fundsData]);
+
+  // Set default active tabs when data loads
+  useEffect(() => {
+    if (groupedData.length > 0) {
+      if (!activeCategory || !groupedData.find(g => g.id === activeCategory)) {
+        const defaultCat = groupedData[0];
+        setActiveCategory(defaultCat.id);
+        if (defaultCat.subCategories.length > 0) {
+          setActiveSubCategory(defaultCat.subCategories[0].id);
+        }
+      }
+    }
+  }, [groupedData, activeCategory]);
+
   const handleCategoryChange = (catId) => {
     setActiveCategory(catId);
-    setActiveSubCategory(heatmapData[catId].subCategories[0].id);
+    const catData = groupedData.find(g => g.id === catId);
+    if (catData && catData.subCategories.length > 0) {
+      setActiveSubCategory(catData.subCategories[0].id);
+    } else {
+      setActiveSubCategory('');
+    }
   };
 
-  const currentCategoryData = heatmapData[activeCategory];
-  const activeSubCatData = currentCategoryData.subCategories.find(s => s.id === activeSubCategory);
+  const currentCategoryData = groupedData.find(g => g.id === activeCategory);
+  const activeSubCatData = currentCategoryData?.subCategories.find(s => s.id === activeSubCategory);
   const activeFunds = activeSubCatData ? activeSubCatData.funds : [];
+
+  if (groupedData.length === 0) return null; // Don't render if no data
 
   return (
     <section className="py-16 bg-[#f7f9fc]">
@@ -37,6 +83,7 @@ export default function HeatmapSection() {
           <div className="flex flex-col lg:flex-row flex-1">
             {/* Left Sidebar - Parent Categories */}
             <CategoryTabs 
+              categories={groupedData.map(g => ({ id: g.id, label: g.label }))}
               activeCategory={activeCategory} 
               setActiveCategory={handleCategoryChange} 
             />
@@ -61,12 +108,14 @@ export default function HeatmapSection() {
             </div>
 
             {/* Right Sidebar - Sub Categories */}
-            <SubCategoryTabs 
-              subCategories={currentCategoryData.subCategories}
-              activeSubCategoryId={activeSubCategory}
-              setActiveSubCategoryId={setActiveSubCategory}
-              parentCategoryLabel={activeCategory === 'equity' ? 'Equity' : activeCategory === 'debt' ? 'Debt' : 'Hybrid'}
-            />
+            {currentCategoryData && currentCategoryData.subCategories.length > 0 && (
+              <SubCategoryTabs 
+                subCategories={currentCategoryData.subCategories}
+                activeSubCategoryId={activeSubCategory}
+                setActiveSubCategoryId={setActiveSubCategory}
+                parentCategoryLabel={currentCategoryData.label}
+              />
+            )}
           </div>
         </motion.div>
       </div>

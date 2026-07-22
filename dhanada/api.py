@@ -74,6 +74,11 @@ def get_funds_list():
             
             plan_nav = None
             nav_date = None
+            returns_1w = None
+            returns_1m = None
+            returns_3m = None
+            returns_6m = None
+            returns_ytd = None
             returns_1y = None
             returns_3y = None
             returns_5y = None
@@ -84,9 +89,14 @@ def get_funds_list():
                 
                 if best_plan.performance:
                     perf = frappe.db.get_value("SIF Scheme Plan Performance", best_plan.performance, 
-                        ["1_year", "3_years", "5_years"], as_dict=True)
+                        ["1_week", "1_month", "3_months", "6_months", "year_to_date", "1_year", "3_years", "5_years"], as_dict=True)
                     if perf:
                         perf = mask_invalid_returns(perf, launch_date)
+                        returns_1w = perf.get("1_week")
+                        returns_1m = perf.get("1_month")
+                        returns_3m = perf.get("3_months")
+                        returns_6m = perf.get("6_months")
+                        returns_ytd = perf.get("year_to_date")
                         returns_1y = perf.get("1_year")
                         returns_3y = perf.get("3_years")
                         returns_5y = perf.get("5_years")
@@ -111,6 +121,11 @@ def get_funds_list():
                 "minInvestment": s.minimum_subscription,
                 "nav": plan_nav,
                 "navDate": nav_date,
+                "returns1W": returns_1w,
+                "returns1M": returns_1m,
+                "returns3M": returns_3m,
+                "returns6M": returns_6m,
+                "returnsYTD": returns_ytd,
                 "returns1Y": returns_1y,
                 "returns3Y": returns_3y,
                 "returns5Y": returns_5y,

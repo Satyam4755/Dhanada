@@ -4,7 +4,7 @@ import Hero from '../components/Hero'
 import Stats from '../components/Stats'
 import FeaturedFund from '../components/FeaturedFund'
 import TopFunds from '../components/TopFunds'
-// import HeatmapSection from '../components/HeatmapSection'
+import HeatmapSection from '../components/HeatmapSection'
 import WhyChoose from '../components/WhyChoose'
 import FundMarketplace from '../components/FundMarketplace'
 import InvestmentPhilosophy from '../components/InvestmentPhilosophy'
@@ -46,6 +46,7 @@ export default function Home() {
         <Stats />
         {!loading && featuredFund && <FeaturedFund fund={featuredFund} />}
         {!loading && funds.length > 0 && <TopFunds fundsData={funds} />}
+        {!loading && funds.length > 0 && <HeatmapSection fundsData={funds} />}
         <WhyChoose />
         {!loading && funds.length > 0 && <FundMarketplace fundsData={funds} />}
         <InvestmentPhilosophy />

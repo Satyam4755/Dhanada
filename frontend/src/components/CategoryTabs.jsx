@@ -1,16 +1,10 @@
 import { motion } from 'framer-motion';
 
-const categories = [
-  { id: 'equity', label: 'Equity-Oriented' },
-  { id: 'debt', label: 'Debt-Oriented' },
-  { id: 'hybrid', label: 'Hybrid' },
-];
-
-export default function CategoryTabs({ activeCategory, setActiveCategory }) {
+export default function CategoryTabs({ categories = [], activeCategory, setActiveCategory }) {
   return (
     <div className="flex flex-row lg:flex-col gap-2 min-w-[220px] bg-white border-r border-[#e8edf7] p-4 overflow-x-auto lg:overflow-visible no-scrollbar">
       <h3 className="hidden lg:block text-xs font-bold text-gray-400 uppercase tracking-wide mb-3 pl-2">
-        Parent Category
+        Asset Class
       </h3>
       {categories.map((cat) => (
         <button

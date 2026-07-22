@@ -20,9 +20,11 @@ export default function TopFunds({ fundsData = [] }) {
 
   // Use the API's assetClass or category if type is missing, and sort by returns1Y
   const getSortedFunds = (data) => {
-    return [...data]
-      .filter(f => f.returns1Y != null) // Only include funds with valid returns
-      .sort((a, b) => b.returns1Y - a.returns1Y); // Sort descending
+    return [...data].sort((a, b) => {
+      const aRet = a.returns1Y != null ? parseFloat(a.returns1Y) : -Infinity;
+      const bRet = b.returns1Y != null ? parseFloat(b.returns1Y) : -Infinity;
+      return bRet - aRet;
+    });
   };
 
   const filtered = activeTab === 'All'
@@ -99,12 +101,13 @@ export default function TopFunds({ fundsData = [] }) {
                 {/* Rank */}
                 <div className="flex items-center gap-2">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                    fund.returns1Y == null ? 'bg-gray-100 text-gray-400' :
                     rank === 1 ? 'bg-amber-100 text-amber-600' :
                     rank === 2 ? 'bg-gray-100 text-gray-500' :
                     rank === 3 ? 'bg-orange-100 text-orange-500' :
                     'bg-blue-50 text-blue-600'
                   }`}>
-                    {rank}
+                    {fund.returns1Y != null ? rank : '-'}
                   </div>
                 </div>
 
@@ -143,7 +146,7 @@ export default function TopFunds({ fundsData = [] }) {
 
                 {/* AUM */}
                 <div>
-                  <p className="text-sm font-semibold text-gray-700">{fund.aum != null ? fund.aum : 'N/A'}</p>
+                  <p className="text-sm font-semibold text-gray-700">{fund.aum != null ? `₹${fund.aum}Cr` : 'N/A'}</p>
                   {fund.rating ? (
                     <div className="flex">
                       {Array.from({ length: fund.rating }).map((_, i) => (

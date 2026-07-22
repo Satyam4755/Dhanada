@@ -2,10 +2,9 @@ import { motion } from 'framer-motion';
 
 export default function HeatmapHeader({ timeFilter, setTimeFilter }) {
   const tabs = [
-    { label: '3M', value: 3 },
-    { label: '6M', value: 6 },
-    { label: '12M', value: 12 },
-    { label: 'All', value: 'all' },
+    { label: 'Short Term', value: 'Short Term' },
+    { label: 'Long Term', value: 'Long Term' },
+    { label: 'All', value: 'All' },
   ];
 
   return (
@@ -15,14 +14,14 @@ export default function HeatmapHeader({ timeFilter, setTimeFilter }) {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="text-2xl lg:text-3xl font-bold mb-2 font-serif">
-          Monthly Returns Heatmap
+          Performance Heatmap
         </motion.h2>
         <motion.p 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1 }}
           className="text-blue-100 text-sm max-w-2xl">
-          Compare monthly returns of SIF funds across different categories and identify the best-performing funds.
+          Compare trailing returns of SIF funds across different categories and identify the best-performing funds.
         </motion.p>
       </div>
 
