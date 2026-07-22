@@ -1,6 +1,7 @@
 import time
 import frappe
 from .github_client import GitHubClient
+from .local_client import LocalFileSystemClient
 from .mapper import DataMapper
 from .importer import DataImporter
 from .logger import log_sync_start, log_sync_completed, log_error, log_warning
@@ -14,7 +15,8 @@ def sync_nav_performance(dry_run: bool = False):
     log_sync_start()
     
     try:
-        client = GitHubClient()
+        use_local = frappe.conf.get("sif_sync_use_local") == 1
+        client = LocalFileSystemClient() if use_local else GitHubClient()
         
         # 1. Fetch data
         nav_data = client.fetch_latest_nav()
@@ -67,7 +69,8 @@ def sync_scheme_details(dry_run: bool = False):
     log_sync_start()
     
     try:
-        client = GitHubClient()
+        use_local = frappe.conf.get("sif_sync_use_local") == 1
+        client = LocalFileSystemClient() if use_local else GitHubClient()
         
         # 1. Fetch data
         scheme_data = client.fetch_scheme_details()

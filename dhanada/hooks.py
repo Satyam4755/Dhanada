@@ -151,11 +151,8 @@ app_license = "mit"
 
 scheduler_events = {
 	"cron": {
-		"30 0 * * 2,3,4,5,6": [
-			"dhanada.sif.sync.scheduler.sync_nav_performance"
-		],
-		"0 3 * * 0": [
-			"dhanada.sif.sync.scheduler.sync_scheme_details"
+		"0 2 * * *": [
+			"dhanada.sif.sync.orchestrator.run_complete_pipeline"
 		]
 	}
 }

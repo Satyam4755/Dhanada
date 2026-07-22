@@ -52,12 +52,16 @@ class Scheme:
     benchmark_tier_1: Optional[str] = None
     benchmark_tier_2: Optional[str] = None
     minimum_subscription: float = 0.0
+    minimum_subscription_text: Optional[str] = None
     nfo_start_date: Optional[date] = None
     nfo_end_date: Optional[date] = None
     nfo_allotment_date: Optional[date] = None
     scheme_reopen_date: Optional[date] = None
     is_active: bool = False
     is_active_for_subscription: bool = False
+    registrar: Optional[str] = None
+    custodian: Optional[str] = None
+    auditor: Optional[str] = None
     isid_url: Optional[str] = None
     kim_url: Optional[str] = None
     sai_url: Optional[str] = None

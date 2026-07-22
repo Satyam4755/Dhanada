@@ -40,7 +40,15 @@
   "sai_url",
   "column_break_etkx",
   "factsheet_url",
-  "monthly_portfolio_disclosure_url"
+  "monthly_portfolio_disclosure_url",
+  "benchmark_tier_1",
+  "benchmark_tier_2",
+  "face_value",
+  "maturity_date",
+  "registrar",
+  "custodian",
+  "auditor",
+  "minimum_subscription_text"
  ],
  "fields": [
   {
@@ -251,6 +259,46 @@
   {
    "fieldname": "column_break_etkx",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "benchmark_tier_1",
+   "fieldtype": "Data",
+   "label": "Benchmark Tier 1"
+  },
+  {
+   "fieldname": "benchmark_tier_2",
+   "fieldtype": "Data",
+   "label": "Benchmark Tier 2"
+  },
+  {
+   "fieldname": "face_value",
+   "fieldtype": "Data",
+   "label": "Face Value"
+  },
+  {
+   "fieldname": "maturity_date",
+   "fieldtype": "Date",
+   "label": "Maturity Date"
+  },
+  {
+   "fieldname": "registrar",
+   "fieldtype": "Data",
+   "label": "Registrar"
+  },
+  {
+   "fieldname": "custodian",
+   "fieldtype": "Data",
+   "label": "Custodian"
+  },
+  {
+   "fieldname": "auditor",
+   "fieldtype": "Data",
+   "label": "Auditor"
+  },
+  {
+   "fieldname": "minimum_subscription_text",
+   "fieldtype": "Small Text",
+   "label": "Minimum Subscription Text"
   }
  ],
  "grid_page_length": 50,
@@ -261,7 +309,7 @@
    "link_fieldname": "scheme"
   }
  ],
- "modified": "2026-07-16 18:01:24.907476",
+ "modified": "2026-07-22 17:00:00.000000",
  "modified_by": "Administrator",
  "module": "SIF",
  "name": "SIF Scheme",

@@ -171,18 +171,24 @@ class DataImporter:
         doc.scheme_objective = scheme.scheme_objective
         doc.exit_load = scheme.exit_load
         doc.minimum_subscription = scheme.minimum_subscription
+        doc.minimum_subscription_text = scheme.minimum_subscription_text
         doc.nfo_start_date = scheme.nfo_start_date
         doc.nfo_end_date = scheme.nfo_end_date
         doc.nfo_allotment_date = scheme.nfo_allotment_date
         doc.scheme_reopen_date = scheme.scheme_reopen_date
+        doc.benchmark_tier_1 = scheme.benchmark_tier_1
+        doc.benchmark_tier_2 = scheme.benchmark_tier_2
+        doc.face_value = scheme.face_value
+        doc.maturity_date = scheme.maturity_date
+        doc.registrar = scheme.registrar
+        doc.custodian = scheme.custodian
+        doc.auditor = scheme.auditor
         doc.is_active = int(scheme.is_active)
         doc.is_active_for_subscription = int(scheme.is_active_for_subscription)
         doc.isid_url = scheme.isid_url
         doc.kim_url = scheme.kim_url
         doc.sai_url = scheme.sai_url
         doc.factsheet_url = scheme.factsheet_url
-
-
         doc.monthly_portfolio_disclosure_url = scheme.monthly_portfolio_disclosure_url
         
         doc.set("allocations", [])

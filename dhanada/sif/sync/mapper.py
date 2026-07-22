@@ -31,12 +31,11 @@ class DataMapper:
         if not val_str:
             return 0.0
         val = str(val_str)
-        # Strip "Rs.", "/-", spaces, commas
-        val = re.sub(r'[Rr]s\.?|/-|\s|,', '', val)
-        try:
-            return float(val)
-        except ValueError:
-            return 0.0
+        val = val.replace(',', '')
+        match = re.search(r'\d+(\.\d+)?', val)
+        if match:
+            return float(match.group(0))
+        return 0.0
 
     def _parse_float(self, val: Any) -> Optional[float]:
         if val is None or str(val).strip() in ("", "None", "null"):
@@ -230,9 +229,12 @@ class DataMapper:
                 investment_strategy = self._derive_investment_strategy(raw_scheme.get("fund_type", ""), raw_scheme.get("category", ""))
                 
                 min_sub = 0.0
+                min_sub_text = None
                 inv_limits = raw_scheme.get("investment_limits", {})
                 if isinstance(inv_limits, dict):
-                    min_sub = self._parse_currency(inv_limits.get("minimum_application_amount"))
+                    raw_min = inv_limits.get("minimum_application_amount")
+                    min_sub_text = str(raw_min) if raw_min else None
+                    min_sub = self._parse_currency(raw_min)
                 
                 managers = self._parse_managers(raw_scheme.get("fund_managers") or [], dataset)
                 
@@ -280,6 +282,7 @@ class DataMapper:
                     face_value=raw_scheme.get("face_value"),
                     exit_load=raw_scheme.get("exit_load"),
                     minimum_subscription=min_sub,
+                    minimum_subscription_text=min_sub_text,
                     nfo_start_date=self._parse_date(raw_scheme.get("nfo_open_date")),
                     nfo_end_date=self._parse_date(raw_scheme.get("nfo_close_date")),
                     nfo_allotment_date=self._parse_date(raw_scheme.get("allotment_date")),
@@ -287,6 +290,9 @@ class DataMapper:
                     maturity_date=self._parse_date(raw_scheme.get("maturity_date")),
                     benchmark_tier_1=raw_scheme.get("benchmark_tier_1"),
                     benchmark_tier_2=raw_scheme.get("benchmark_tier_2"),
+                    registrar=raw_scheme.get("registrar"),
+                    custodian=raw_scheme.get("custodian"),
+                    auditor=raw_scheme.get("auditor"),
                     is_active=True,
                     allocations=allocations,
                     managers=managers
