@@ -254,9 +254,10 @@ class DataImporter:
             for plan_doc in matching_plans:
                 if not self.dry_run:
                     doc = frappe.get_doc("SIF Scheme Plan", plan_doc)
-                    doc.nav = nav_update.nav
-                    doc.nav_date = nav_update.nav_date
-                    doc.save(ignore_permissions=True)
+                    if not doc.nav_date or str(nav_update.nav_date) >= str(doc.nav_date):
+                        doc.nav = nav_update.nav
+                        doc.nav_date = nav_update.nav_date
+                        doc.save(ignore_permissions=True)
                 self.stats["updated"] += 1
 
             if not self.dry_run:
