@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useInView } from 'react-intersection-observer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -26,6 +27,7 @@ function MetricCard({ icon, label, value, color, delay, iconBg }) {
 
 export default function OverviewSection({ fund }) {
   const { ref, inView } = useInView({ triggerOnce: true })
+  const navigate = useNavigate()
   
   const formatPct = (val) => val === 'N/A' || val == null ? 'N/A' : `${val}%`
   const formatScore = (val) => val === 'N/A' || val == null ? 'N/A' : `${val}/10`
@@ -76,11 +78,23 @@ export default function OverviewSection({ fund }) {
         </div>
 
         <div className="flex flex-wrap gap-3 mt-6 pt-5 border-t border-[#e8edf7]">
-          <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#032e92] text-white text-sm font-semibold hover:bg-[#021d63] shadow-md shadow-blue-900/20 transition-all">
+          <button 
+            onClick={() => {
+              if (fund?.id) navigate(`/compare?primary=${fund.id}`)
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#032e92] text-white text-sm font-semibold hover:bg-[#021d63] shadow-md shadow-blue-900/20 transition-all">
             <FontAwesomeIcon icon={faCircleCheck} className="text-xs" />
             Compare Fund
           </button>
-          <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-[#e8edf7] text-gray-600 text-sm font-semibold hover:border-[#032e92] hover:text-[#032e92] transition-all">
+          <button 
+            onClick={() => {
+              if (fund?.documents?.factsheet) {
+                window.open(fund.documents.factsheet, '_blank')
+              } else {
+                alert('Factsheet is currently unavailable for this scheme.')
+              }
+            }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-[#e8edf7] text-gray-600 text-sm font-semibold hover:border-[#032e92] hover:text-[#032e92] transition-all">
             <FontAwesomeIcon icon={faChartLine} className="text-xs" />
             Download Factsheet
           </button>

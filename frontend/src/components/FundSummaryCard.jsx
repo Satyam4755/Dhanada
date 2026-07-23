@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -16,8 +17,23 @@ const riskConfig = {
 
 export default function FundSummaryCard({ fund }) {
   const [bookmarked, setBookmarked] = useState(false)
+  const navigate = useNavigate()
   
   const formatPct = (val) => val === 'N/A' || val == null ? 'N/A' : `${val}%`
+
+  const handleDownloadFactsheet = () => {
+    if (fund?.documents?.factsheet) {
+      window.open(fund.documents.factsheet, '_blank')
+    } else {
+      alert('Factsheet is currently unavailable for this scheme.')
+    }
+  }
+
+  const handleCompare = () => {
+    if (fund?.id) {
+      navigate(`/compare?primary=${fund.id}`)
+    }
+  }
 
   return (
     <aside className="bg-white rounded-3xl border border-[#e8edf7] shadow-xl shadow-blue-900/8 overflow-hidden">
@@ -103,6 +119,7 @@ export default function FundSummaryCard({ fund }) {
           Invest Now
         </motion.button>
         <motion.button
+          onClick={handleCompare}
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
           className="w-full py-2.5 rounded-2xl border-2 border-[#e8edf7] text-gray-600 font-semibold text-sm hover:border-[#032e92] hover:text-[#032e92] transition-all flex items-center justify-center gap-2">
           <FontAwesomeIcon icon={faCircleCheck} className="text-xs" />
@@ -124,9 +141,11 @@ export default function FundSummaryCard({ fund }) {
           <FontAwesomeIcon icon={faShareNodes} className="text-xs" />
           Share
         </button>
-        <button className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-[#e8edf7] text-xs font-semibold text-gray-500 hover:border-[#032e92]/40 transition-all">
+        <button 
+          onClick={handleDownloadFactsheet}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-[#e8edf7] text-xs font-semibold text-gray-500 hover:border-[#032e92]/40 transition-all">
           <FontAwesomeIcon icon={faFileArrowDown} className="text-xs" />
-          PDF
+          Factsheet
         </button>
       </div>
     </aside>
