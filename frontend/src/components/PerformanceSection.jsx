@@ -9,12 +9,13 @@ import {
   Filler, Tooltip, Legend
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import PlanSelector from './PlanSelector'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Tooltip, Legend)
 
 const PERIODS = ['1M', '3M', '6M', '1Y', '3Y', '5Y', 'Since Launch']
 
-export default function PerformanceSection({ fund }) {
+export default function PerformanceSection({ fund, planSelectorProps }) {
   const [activePeriod, setActivePeriod] = useState('1Y')
   const { ref, inView } = useInView({ triggerOnce: true })
 
@@ -120,6 +121,10 @@ export default function PerformanceSection({ fund }) {
           </div>
           <h2 className="text-xl font-bold text-gray-900">Performance</h2>
         </div>
+
+        {planSelectorProps && (
+          <PlanSelector {...planSelectorProps} fund={fund} className="mb-6 bg-gray-50" />
+        )}
 
         {/* Period Tabs */}
         <div className="flex items-center gap-1.5 flex-wrap mb-6">
