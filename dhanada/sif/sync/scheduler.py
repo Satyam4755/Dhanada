@@ -1,7 +1,6 @@
 import time
 import frappe
 from .github_client import GitHubClient
-from .local_client import LocalFileSystemClient
 from .mapper import DataMapper
 from .importer import DataImporter
 from .logger import log_sync_start, log_sync_completed, log_error, log_warning
@@ -9,14 +8,12 @@ from .logger import log_sync_start, log_sync_completed, log_error, log_warning
 def sync_nav_performance(dry_run: bool = False):
     """
     Fetches, maps, and imports the latest NAV CSV and all Performance JSONs.
-    Scheduled for Tue-Sat via cron.
     """
     start_time = time.time()
     log_sync_start()
     
     try:
-        use_local = frappe.conf.get("sif_sync_use_local") == 1
-        client = LocalFileSystemClient() if use_local else GitHubClient()
+        client = GitHubClient()
         
         # 1. Fetch data
         nav_data = client.fetch_latest_nav()
@@ -34,10 +31,6 @@ def sync_nav_performance(dry_run: bool = False):
         
         # 3. Import data
         importer = DataImporter(dry_run=dry_run)
-        
-        # Since this is NAV and Performance only, we only pass those lists
-        # (Though DataImporter handles empty lists safely, it's better to explicitly iterate what we need
-        #  or just call import_dataset. Since import_dataset iterates over all lists safely, we just use it)
         importer.import_dataset(dataset)
         
         duration = time.time() - start_time
@@ -63,14 +56,12 @@ def sync_nav_performance(dry_run: bool = False):
 def sync_scheme_details(dry_run: bool = False):
     """
     Fetches, maps, and imports all Scheme Detail JSONs.
-    Scheduled for Weekly (Sunday) via cron.
     """
     start_time = time.time()
     log_sync_start()
     
     try:
-        use_local = frappe.conf.get("sif_sync_use_local") == 1
-        client = LocalFileSystemClient() if use_local else GitHubClient()
+        client = GitHubClient()
         
         # 1. Fetch data
         scheme_data = client.fetch_scheme_details()
@@ -106,4 +97,18 @@ def sync_scheme_details(dry_run: bool = False):
         
     except Exception as e:
         log_error(f"Scheme Details Sync failed entirely: {e}", exc_info=True)
+        raise
+
+def run_github_sync_pipeline():
+    """
+    Master scheduled job to sync all data directly from GitHub.
+    Serially executes scheme details, followed by nav and performance.
+    """
+    try:
+        frappe.logger("sif_sync").info("Starting automated GitHub Sync Pipeline")
+        sync_scheme_details()
+        sync_nav_performance()
+        frappe.logger("sif_sync").info("Completed automated GitHub Sync Pipeline successfully")
+    except Exception as e:
+        frappe.logger("sif_sync").error(f"GitHub Sync Pipeline failed: {str(e)}")
         raise
