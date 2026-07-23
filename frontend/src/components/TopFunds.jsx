@@ -29,7 +29,10 @@ export default function TopFunds({ fundsData = [] }) {
 
   const filtered = activeTab === 'All'
     ? getSortedFunds(fundsData).slice(0, 5) // Show top 5
-    : getSortedFunds(fundsData.filter(f => (f.assetClass || f.category || '').includes(activeTab))).slice(0, 5);
+    : getSortedFunds(fundsData.filter(f => {
+        const textToSearch = `${f.assetClass || ''} ${f.category || ''} ${f.investmentStrategy || ''}`.toLowerCase();
+        return textToSearch.includes(activeTab.toLowerCase());
+      })).slice(0, 5);
 
   const handleFundClick = (id) => {
     navigate(`/funds/${encodeURIComponent(id)}`);
