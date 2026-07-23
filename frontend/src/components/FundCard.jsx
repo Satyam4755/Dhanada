@@ -61,10 +61,7 @@ export default function FundCard({ fund, index, isGrid }) {
                   <span className="text-xl font-bold text-green-600">{fund.returns1Y != null ? `${fund.returns1Y}%` : 'N/A'}</span>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">3Y</p>
-                <span className="text-base font-bold text-gray-700">{fund.returns3Y != null ? `${fund.returns3Y}%` : 'N/A'}</span>
-              </div>
+
               <div className="text-right">
                 <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">NAV</p>
                 <span className="text-xs font-bold text-[#032e92]">{fund.nav != null ? `₹${fund.nav}` : 'N/A'}</span>
@@ -173,7 +170,7 @@ export default function FundCard({ fund, index, isGrid }) {
 
         {/* Stats Container */}
         <div className="bg-[#f7f9fc] rounded-2xl p-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {/* AUM */}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-white border border-[#e8edf7] flex items-center justify-center flex-shrink-0">
@@ -207,16 +204,6 @@ export default function FundCard({ fund, index, isGrid }) {
               </div>
             </div>
 
-            {/* 1Y Return */}
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-green-50 border border-green-100 flex items-center justify-center flex-shrink-0">
-                <FontAwesomeIcon icon={faArrowTrendUp} className="text-green-600 text-xs" />
-              </div>
-              <div>
-                <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">3Y Return</p>
-                <p className="text-sm font-bold text-green-600">{fund.returns3Y != null ? `${fund.returns3Y}%` : 'N/A'}</p>
-              </div>
-            </div>
 
             {/* Expense Ratio */}
             <div className="flex items-center gap-2">

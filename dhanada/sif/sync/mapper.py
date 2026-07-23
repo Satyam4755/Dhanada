@@ -30,11 +30,15 @@ class DataMapper:
     def _parse_currency(self, val_str: Any) -> float:
         if not val_str:
             return 0.0
-        val = str(val_str)
-        val = val.replace(',', '')
+        val = str(val_str).lower().replace(',', '')
         match = re.search(r'\d+(\.\d+)?', val)
         if match:
-            return float(match.group(0))
+            num = float(match.group(0))
+            if 'lakh' in val or 'lac' in val:
+                num *= 100000
+            elif 'cr' in val or 'crore' in val:
+                num *= 10000000
+            return num
         return 0.0
 
     def _parse_float(self, val: Any) -> Optional[float]:
@@ -244,6 +248,9 @@ class DataMapper:
                     raw_min = inv_limits.get("minimum_application_amount")
                     min_sub_text = str(raw_min) if raw_min else None
                     min_sub = self._parse_currency(raw_min)
+                
+                if not min_sub or min_sub < 100:
+                    min_sub = 1000000.00
                 
                 managers = self._parse_managers(raw_scheme.get("fund_managers") or [], dataset)
                 
