@@ -4,14 +4,9 @@ import { useInView } from 'react-intersection-observer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faStar, faArrowTrendUp } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
+import { getRiskLevelConfig } from '../utils/risk'
 
 const tabs = ['All', 'Equity', 'Debt', 'Hybrid', 'Alternative']
-
-const riskColors = {
-  'Low': 'bg-green-100 text-green-700 border-green-200',
-  'Moderate': 'bg-amber-100 text-amber-700 border-amber-200',
-  'High': 'bg-red-100 text-red-700 border-red-200',
-}
 
 export default function TopFunds({ fundsData = [] }) {
   const [activeTab, setActiveTab] = useState('All')
@@ -141,9 +136,9 @@ export default function TopFunds({ fundsData = [] }) {
                 </div>
 
                 {/* Risk */}
-                <div>
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${riskColors[fund.risk] || 'bg-gray-100 text-gray-600'}`}>
-                    {fund.risk || 'N/A'}
+                <div className="flex gap-2 text-xs font-semibold">
+                  <span className={`px-2.5 py-1 rounded-full border ${getRiskLevelConfig(fund.riskLevel).bg} ${getRiskLevelConfig(fund.riskLevel).text} ${getRiskLevelConfig(fund.riskLevel).border}`}>
+                    {getRiskLevelConfig(fund.riskLevel).level !== 'N/A' ? `Level ${getRiskLevelConfig(fund.riskLevel).level}` : 'N/A'}
                   </span>
                 </div>
 

@@ -6,6 +6,7 @@ import {
   faPercent, faCoins, faScaleBalanced, faMoneyBillTrendUp,
   faChartLine, faUsers, faBuildingColumns, faCircleInfo
 } from '@fortawesome/free-solid-svg-icons'
+import { getRiskLevelConfig } from '../utils/risk'
 
 export default function FundInformation({ fund }) {
   const { ref, inView } = useInView({ triggerOnce: true })
@@ -60,7 +61,7 @@ export default function FundInformation({ fund }) {
       color: 'text-amber-600',
       bg: 'bg-amber-50',
       items: [
-        { label: 'Risk Level', value: fund.risk },
+        { label: 'Risk Level', value: getRiskLevelConfig(fund.riskLevel).level !== 'N/A' ? `Level ${getRiskLevelConfig(fund.riskLevel).level}` : 'N/A' },
         { label: 'Settlement', value: fund.settlement },
         { label: 'Taxation', value: fund.taxation },
       ],

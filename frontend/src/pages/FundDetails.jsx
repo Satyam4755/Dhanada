@@ -15,6 +15,7 @@ import OverviewSection from '../components/OverviewSection'
 import ObjectiveSection from '../components/ObjectiveSection'
 import FundInformation from '../components/FundInformation'
 import PerformanceSection from '../components/PerformanceSection'
+import Riskometer from '../components/Riskometer'
 import { AllocationChart, SectorChart } from '../components/AllocationChart'
 import HoldingsTable from '../components/HoldingsTable'
 import FundManager from '../components/FundManager'
@@ -213,15 +214,13 @@ export default function FundDetails() {
       exitLoad: apiFund.exitLoad || 'N/A',
       minimumSIP: apiFund.minInvestmentText || (apiFund.minInvestment != null ? `₹${apiFund.minInvestment.toLocaleString()}` : 'N/A'),
       minimumLumpsum: apiFund.minInvestmentText || (apiFund.minInvestment != null ? `₹${apiFund.minInvestment.toLocaleString()}` : 'N/A'),
-      risk: apiFund.risk || 'Moderate',
-      riskScore: 'N/A',
+      riskLevel: apiFund.riskLevel,
       lockIn: 'None',
       dividendOption: selectedPlan.option || 'N/A',
       settlement: 'N/A',
       taxation: 'N/A',
       investmentType: selectedPlan.type || 'N/A',
 
-      metrics: apiFund.metrics || {},
       objective: apiFund.schemeObjective || 'Objective data unavailable.',
       strategy: [],
       suitableFor: [],
@@ -353,6 +352,8 @@ export default function FundDetails() {
                 setSelectedType, setSelectedOption, setSelectedSubOption, setSelectedPeriod
               }} 
             />
+            
+            <Riskometer fund={fund} />
 
             {/* Holdings section */}
             <section id="holdings" className="scroll-mt-32 space-y-5">

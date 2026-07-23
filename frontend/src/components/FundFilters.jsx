@@ -65,7 +65,15 @@ export default function FundFilters({ filters, setFilters, onClear, amcList = []
 
   const dynamicAssetClasses = ['All', ...new Set(fundsData.map(f => f.assetClass).filter(Boolean))].sort();
   const dynamicCategories = ['All', ...new Set(fundsData.map(f => f.category).filter(Boolean))].sort();
-  const dynamicRiskLevels = ['All', ...new Set(fundsData.map(f => f.risk).filter(Boolean))].sort();
+  const dynamicRiskLevels = useMemo(() => {
+    const risks = new Set()
+    fundsData.forEach(f => {
+      if (f.riskLevel !== 'N/A') {
+        risks.add(f.riskLevel)
+      }
+    })
+    return ['All', ...Array.from(risks).sort().map(r => `Risk Level ${r}`)]
+  }, [fundsData])
 
   return (
     <section className="bg-[#f7f9fc] pb-4">

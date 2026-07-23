@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCircleExclamation, faPlus, faXmark, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { faSpinner, faCircleExclamation, faPlus, faXmark, faCheck, faShieldHalved } from '@fortawesome/free-solid-svg-icons'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import PlanSelector from '../components/PlanSelector'
-import { fetchFundDetails, fetchFundsList } from '../api/funds'
+import { fetchFundsList, fetchFundDetails } from '../api/funds'
+import { getRiskLevelConfig } from '../utils/risk'
 
 function formatCurrency(val) {
   if (val == null || val === 'N/A') return 'N/A'
@@ -194,12 +195,22 @@ function CompareColumn({ id, onRemove, allFundsList, category }) {
     )
   }
 
-  const renderRow = (label, value, isBold = false) => (
-    <div className="py-4 border-b border-[#e8edf7] flex flex-col gap-1">
-      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{label}</span>
-      <span className={`text-sm ${isBold ? 'font-bold text-gray-900' : 'font-medium text-gray-700'}`}>{value || 'N/A'}</span>
-    </div>
-  )
+  const renderRow = (label, value, highlight = false) => {
+    const risk = getRiskLevelConfig(fund.riskLevel)
+    return (
+      <div className={`px-4 py-3 border-b border-[#e8edf7] ${highlight ? 'bg-[#f7f9fc]' : ''}`}>
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</p>
+        {label === 'Risk' ? (
+          <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border ${risk.bg} ${risk.text} ${risk.border}`}>
+            <FontAwesomeIcon icon={faShieldHalved} className="text-[10px]" />
+            <span className="text-xs font-bold whitespace-nowrap">{risk.level !== 'N/A' ? `Level ${risk.level}` : 'N/A'}</span>
+          </div>
+        ) : (
+          <p className="text-sm font-semibold text-gray-800 break-words">{value || 'N/A'}</p>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="flex-1 border border-[#e8edf7] rounded-3xl bg-white shadow-xl shadow-blue-900/5 relative overflow-hidden flex flex-col min-w-[320px]">
@@ -224,7 +235,7 @@ function CompareColumn({ id, onRemove, allFundsList, category }) {
       <div className="p-6 flex-1 bg-white">
         {renderRow('Category', fund.category, true)}
         {renderRow('Asset Class', fund.assetClass)}
-        {renderRow('Risk', `${fund.risk || 'N/A'} Risk`, true)}
+        {renderRow('Risk', fund.riskLevel, true)}
         {renderRow('Current NAV', `${fund.nav} (${fund.navDate})`, true)}
         {renderRow('1 Month Return', fund.returns1M)}
         {renderRow('3 Month Return', fund.returns3M)}

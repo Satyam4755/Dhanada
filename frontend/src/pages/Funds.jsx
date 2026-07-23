@@ -28,7 +28,6 @@ const defaultFilters = {
 }
 
 const minInvestmentOrder = { '₹500': 500, '₹1,000': 1000, '₹5,000': 5000, '₹10,000': 10000, '₹50,000': 50000 }
-const riskOrder = { 'Low': 1, 'Moderate': 2, 'High': 3, 'Very High': 4 }
 
 function parseReturns(val) {
   if (val == null || val === '—') return -999 // fallback for missing returns in sorting
@@ -77,7 +76,10 @@ export default function Funds() {
 
     if (filters.assetClass) result = result.filter(f => f.assetClass === filters.assetClass)
     if (filters.category) result = result.filter(f => f.category === filters.category)
-    if (filters.risk) result = result.filter(f => f.risk === filters.risk)
+    if (filters.risk && filters.risk !== 'All') {
+      const targetRisk = parseInt(filters.risk.replace('Risk Level ', ''), 10)
+      result = result.filter(f => f.riskLevel === targetRisk)
+    }
     if (filters.amc) result = result.filter(f => f.amc === filters.amc)
     if (filters.minInvestment) {
       result = result.filter(f => {
@@ -104,7 +106,7 @@ export default function Funds() {
         result.sort((a, b) => parseReturns(b.returns1Y) - parseReturns(a.returns1Y))
         break
       case 'risk':
-        result.sort((a, b) => (riskOrder[b.risk] || 0) - (riskOrder[a.risk] || 0))
+        result.sort((a, b) => (b.riskLevel !== 'N/A' ? b.riskLevel : 0) - (a.riskLevel !== 'N/A' ? a.riskLevel : 0))
         break
       case 'alpha':
         result.sort((a, b) => (a.name || '').localeCompare(b.name || ''))

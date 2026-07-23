@@ -89,7 +89,7 @@
   },
   {
    "fieldname": "risk_band",
-   "fieldtype": "Data",
+   "fieldtype": "Int",
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Risk Band",

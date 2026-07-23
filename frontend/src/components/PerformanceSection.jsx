@@ -96,15 +96,6 @@ export default function PerformanceSection({ fund, planSelectorProps }) {
     },
   }
 
-  const metrics = (fund.metrics && Object.keys(fund.metrics).length > 0) ? [
-    { label: 'CAGR (3Y)', value: `${fund.metrics.cagr3Y}%`, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Volatility', value: `${fund.metrics.volatility}%`, color: 'text-amber-600', bg: 'bg-amber-50' },
-    { label: 'Sharpe Ratio', value: fund.metrics.sharpeRatio, color: 'text-[#032e92]', bg: 'bg-[#eef4ff]' },
-    { label: 'Sortino Ratio', value: fund.metrics.sortinoRatio, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-    { label: 'Alpha', value: `+${fund.metrics.alpha}%`, color: 'text-green-600', bg: 'bg-green-50' },
-    { label: 'Beta', value: fund.metrics.beta, color: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: 'Std. Deviation', value: `${fund.metrics.standardDeviation}%`, color: 'text-rose-600', bg: 'bg-rose-50' },
-  ] : []
 
   return (
     <section id="performance" className="scroll-mt-32">
@@ -179,25 +170,6 @@ export default function PerformanceSection({ fund, planSelectorProps }) {
               ))}
             </tbody>
           </table>
-        </div>
-
-        {/* Risk Metrics Grid */}
-        <div>
-          <p className="text-sm font-bold text-gray-700 mb-3">Risk & Return Metrics</p>
-          {(fund.metrics && Object.keys(fund.metrics).length > 0) ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
-              {metrics.map((m) => (
-                <div key={m.label} className={`${m.bg} rounded-2xl p-3 text-center`}>
-                  <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-1">{m.label}</p>
-                  <p className={`text-sm font-bold ${m.color}`}>{m.value}</p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center">
-              <p className="text-gray-400 text-sm font-medium">Metrics unavailable</p>
-            </div>
-          )}
         </div>
       </motion.div>
     </section>

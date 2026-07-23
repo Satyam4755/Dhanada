@@ -5,12 +5,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 
-const riskConfig = {
-  'Low': 'bg-green-100 text-green-700 border-green-200',
-  'Moderate': 'bg-amber-100 text-amber-700 border-amber-200',
-  'High': 'bg-red-100 text-red-700 border-red-200',
-  'Very High': 'bg-red-200 text-red-800 border-red-300',
-}
+import { getRiskLevelConfig } from '../utils/risk'
 
 export default function RecommendedFundCard({ fund, index }) {
   const navigate = useNavigate();
@@ -44,7 +39,9 @@ export default function RecommendedFundCard({ fund, index }) {
           </div>
           <div className="flex flex-wrap gap-1.5 mt-2">
             <span className="text-[10px] font-semibold bg-[#eef4ff] text-[#032e92] px-2 py-0.5 rounded-full">{fund.category}</span>
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${riskConfig[fund.risk] || 'bg-gray-100 text-gray-600'}`}>{fund.risk || 'N/A'}</span>
+            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${getRiskLevelConfig(fund.riskLevel).bg} ${getRiskLevelConfig(fund.riskLevel).text} ${getRiskLevelConfig(fund.riskLevel).border}`}>
+              {getRiskLevelConfig(fund.riskLevel).level !== 'N/A' ? `Level ${getRiskLevelConfig(fund.riskLevel).level}` : 'N/A'}
+            </span>
           </div>
         </div>
 

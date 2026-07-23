@@ -6,6 +6,7 @@ import {
   faArrowTrendUp, faPercent, faRankingStar
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
+import { getRiskLevelConfig } from '../utils/risk'
 
 export default function FeaturedFund({ fund }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 })
@@ -94,7 +95,7 @@ export default function FeaturedFund({ fund }) {
                   { label: 'NAV', value: fund.nav != null ? `₹${fund.nav}` : 'N/A', change: fund.navDate || '', positive: true },
                   { label: 'AUM', value: fund.aum != null ? fund.aum : 'N/A', change: fund.category, positive: null },
                   { label: 'Min. Investment', value: fund.minInvestment != null ? `₹${fund.minInvestment.toLocaleString()}` : 'N/A', change: 'SIP / Lump Sum', positive: null },
-                  { label: 'Risk Level', value: fund.risk || 'N/A', change: '', positive: null },
+                  { label: 'Risk Level', value: getRiskLevelConfig(fund.riskLevel).level !== 'N/A' ? `Level ${getRiskLevelConfig(fund.riskLevel).level}` : 'N/A', change: '', positive: null },
                   { label: 'Exit Load', value: fund.exitLoad || 'N/A', change: '', positive: null },
                   { label: 'Expense Ratio', value: fund.expenseRatio != null ? `${fund.expenseRatio}%` : 'N/A', change: 'Direct Plan', positive: true },
                 ].map((item) => (

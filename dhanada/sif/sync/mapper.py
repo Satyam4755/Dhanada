@@ -45,6 +45,15 @@ class DataMapper:
         except ValueError:
             return None
 
+    def extract_numeric_risk(self, val: Any) -> Optional[int]:
+        if val is None:
+            return None
+        match = re.search(r'\d+', str(val))
+        if match:
+            risk_val = int(match.group())
+            return risk_val if 1 <= risk_val <= 5 else None
+        return None
+
     def _derive_scheme_type(self, fund_type_desc: str) -> Optional[str]:
         desc = (fund_type_desc or "").lower()
         if "open ended" in desc or "open-ended" in desc:
@@ -275,7 +284,7 @@ class DataMapper:
                     investment_strategy=investment_strategy,
                     scheme_type=scheme_type,
                     scheme_subcategory=category_name,
-                    risk_band=raw_scheme.get("riskometer_as_on_date"),
+                    risk_band=self.extract_numeric_risk(raw_scheme.get("riskometer_as_on_date")),
                     riskometer_at_launch=raw_scheme.get("riskometer_at_launch"),
                     potential_risk_class=raw_scheme.get("potential_risk_class"),
                     scheme_objective=raw_scheme.get("scheme_objective") or "Objective not provided",

@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowTrendUp, faShieldHalved, faArrowRight, faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
+import { faArrowTrendUp, faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { Link } from 'react-router-dom'
+import { getRiskLevelConfig } from '../utils/risk'
 
-const riskConfig = {
-  'Low': 'bg-green-100 text-green-700 border-green-200',
-  'Moderate': 'bg-amber-100 text-amber-700 border-amber-200',
-  'High': 'bg-red-100 text-red-700 border-red-200',
-  'Very High': 'bg-red-200 text-red-800 border-red-300',
+const assetClassColors = {
+  'Equity': 'bg-blue-100 text-blue-700 border-blue-200',
+  'Debt': 'bg-purple-100 text-purple-700 border-purple-200',
+  'Hybrid': 'bg-orange-100 text-orange-700 border-orange-200',
 }
 
 export default function RelatedFunds({ funds }) {
@@ -25,9 +26,9 @@ export default function RelatedFunds({ funds }) {
             <p className="text-xs font-bold text-[#032e92] uppercase tracking-widest mb-1">Similar Funds</p>
             <h2 className="text-2xl font-bold text-gray-900">Related Funds</h2>
           </div>
-          <a href="/funds" className="flex items-center gap-1.5 text-sm font-semibold text-[#032e92] hover:text-[#021d63] transition-colors">
+          <Link to="/funds" className="flex items-center gap-1.5 text-sm font-semibold text-[#032e92] hover:text-[#021d63] transition-colors">
             View All <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
-          </a>
+          </Link>
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -65,13 +66,16 @@ export default function RelatedFunds({ funds }) {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mb-4">
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${riskConfig[fund.risk]}`}>
-                  {fund.risk}
+              <div className="flex flex-wrap items-center gap-2 mt-4">
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${getRiskLevelConfig(fund.riskLevel).bg} ${getRiskLevelConfig(fund.riskLevel).text} ${getRiskLevelConfig(fund.riskLevel).border}`}>
+                  {getRiskLevelConfig(fund.riskLevel).level !== 'N/A' ? `Level ${getRiskLevelConfig(fund.riskLevel).level}` : 'N/A'}
+                </span>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${assetClassColors[fund.assetClass] || 'bg-gray-100 text-gray-700 border-gray-200'}`}>
+                  {fund.assetClass || 'Unknown'}
                 </span>
               </div>
 
-              <button className="w-full py-2.5 rounded-xl bg-[#032e92] text-white text-xs font-bold hover:bg-[#021d63] shadow-sm shadow-blue-900/20 transition-all flex items-center justify-center gap-1.5">
+              <button className="w-full mt-4 py-2.5 rounded-xl bg-[#032e92] text-white text-xs font-bold hover:bg-[#021d63] shadow-sm shadow-blue-900/20 transition-all flex items-center justify-center gap-1.5">
                 Invest Now <FontAwesomeIcon icon={faArrowRight} className="text-[10px]" />
               </button>
             </motion.div>

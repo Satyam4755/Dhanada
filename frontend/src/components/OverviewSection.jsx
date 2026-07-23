@@ -106,7 +106,7 @@ export default function OverviewSection({ fund }) {
         <MetricCard delay={0.1} icon={faCoins} label="Current NAV" value={fund.nav} color="text-[#032e92]" iconBg="bg-[#eef4ff]" />
         <MetricCard delay={0.2} icon={faPercent} label="Expense Ratio" value={formatPct(fund.expenseRatio)} color="text-purple-600" iconBg="bg-purple-50" />
         <MetricCard delay={0.3} icon={faArrowTrendUp} label="3Y CAGR" value={formatPct(fund.returns?.['3Y'])} color="text-green-600" iconBg="bg-green-50" />
-        <MetricCard delay={0.4} icon={faShieldHalved} label="Risk Score" value={formatScore(fund.riskScore)} color="text-amber-600" iconBg="bg-amber-50" />
+        <MetricCard delay={0.4} icon={faShieldHalved} label="Risk Score" value={fund.riskLevel !== 'N/A' ? fund.riskLevel : 'N/A'} color="text-amber-600" iconBg="bg-amber-50" />
       </div>
     </section>
   )

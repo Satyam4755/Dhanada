@@ -2,22 +2,17 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { getRiskLevelConfig } from '../utils/risk'
 import {
   faArrowTrendUp, faCoins, faShieldHalved, faChartPie,
   faArrowRight, faBookmark, faShareNodes, faFileArrowDown,
   faBuildingColumns, faCircleCheck
 } from '@fortawesome/free-solid-svg-icons'
 
-const riskConfig = {
-  'Low': 'bg-green-100 text-green-700 border-green-200',
-  'Moderate': 'bg-amber-100 text-amber-700 border-amber-200',
-  'High': 'bg-red-100 text-red-700 border-red-200',
-  'Very High': 'bg-red-200 text-red-800 border-red-300',
-}
-
 export default function FundSummaryCard({ fund }) {
   const [bookmarked, setBookmarked] = useState(false)
   const navigate = useNavigate()
+  const risk = getRiskLevelConfig(fund.riskLevel)
   
   const formatPct = (val) => val === 'N/A' || val == null ? 'N/A' : `${val}%`
 
@@ -59,7 +54,7 @@ export default function FundSummaryCard({ fund }) {
         <div className="flex flex-wrap gap-1.5 relative">
           <span className="bg-white/15 border border-white/20 px-2.5 py-0.5 rounded-full text-xs font-semibold text-white">{fund.assetClass}</span>
           <span className="bg-white/15 border border-white/20 px-2.5 py-0.5 rounded-full text-xs font-semibold text-white">{fund.category}</span>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${riskConfig[fund.risk] || 'bg-gray-100 text-gray-700 border-gray-200'}`}>{fund.risk} Risk</span>
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${risk.bg} ${risk.text} ${risk.border}`}>{risk.level !== 'N/A' ? `Risk Level ${risk.level}` : 'N/A'}</span>
         </div>
       </div>
 
@@ -95,6 +90,12 @@ export default function FundSummaryCard({ fund }) {
             <span className={`text-sm font-bold ${item.color}`}>{item.val}</span>
           </div>
         ))}
+        <div className="flex items-center justify-between pt-2">
+            <div className={`px-2 py-0.5 rounded flex items-center gap-1 border ${risk.bg} ${risk.text} ${risk.border}`}>
+              <FontAwesomeIcon icon={faShieldHalved} className="text-[10px]" />
+              <span className="text-xs font-bold whitespace-nowrap">{risk.level !== 'N/A' ? `Risk Level ${risk.level}` : 'N/A'}</span>
+            </div>
+        </div>
       </div>
 
       {/* Returns pills */}

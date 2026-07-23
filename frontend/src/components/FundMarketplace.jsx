@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faStar, faBookmark, faArrowTrendUp } from '@fortawesome/free-solid-svg-icons'
 import { faBookmark as faBookmarkRegular } from '@fortawesome/free-regular-svg-icons'
 import { useNavigate } from 'react-router-dom'
+import { getRiskLevelConfig } from '../utils/risk'
 
 const riskColors = {
   'Low': 'bg-green-100 text-green-700',
@@ -115,8 +116,8 @@ export default function FundMarketplace({ fundsData = [] }) {
                     <p className="font-bold text-gray-800">{fund.aum != null ? fund.aum : 'N/A'}</p>
                   </div>
                   <div>
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${riskColors[fund.risk] || 'bg-gray-100 text-gray-600'}`}>
-                      {fund.risk || 'N/A'}
+                    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getRiskLevelConfig(fund.riskLevel).bg} ${getRiskLevelConfig(fund.riskLevel).text} ${getRiskLevelConfig(fund.riskLevel).border}`}>
+                      {getRiskLevelConfig(fund.riskLevel).level !== 'N/A' ? `Level ${getRiskLevelConfig(fund.riskLevel).level}` : 'N/A'}
                     </span>
                   </div>
                 </div>

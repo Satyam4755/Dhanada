@@ -6,13 +6,7 @@ import {
   faArrowTrendUp, faStar, faArrowUpRightFromSquare, faBuildingColumns
 } from '@fortawesome/free-solid-svg-icons'
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons'
-
-const riskConfig = {
-  'Low': { cls: 'bg-green-100 text-green-700 border-green-200', dot: 'bg-green-500' },
-  'Moderate': { cls: 'bg-amber-100 text-amber-700 border-amber-200', dot: 'bg-amber-500' },
-  'High': { cls: 'bg-red-100 text-red-700 border-red-200', dot: 'bg-red-500' },
-  'Very High': { cls: 'bg-red-200 text-red-800 border-red-300', dot: 'bg-red-700' },
-}
+import { getRiskLevelConfig } from '../utils/risk'
 
 const assetClassColors = {
   'Equity': 'bg-blue-100 text-blue-700',
@@ -23,7 +17,7 @@ const assetClassColors = {
 }
 
 export default function FundCard({ fund, index, isGrid }) {
-  const risk = riskConfig[fund.risk] || riskConfig['Moderate']
+  const risk = getRiskLevelConfig(fund.riskLevel)
   const assetCls = assetClassColors[fund.assetClass] || 'bg-gray-100 text-gray-700'
 
   if (isGrid) {
@@ -93,7 +87,7 @@ export default function FundCard({ fund, index, isGrid }) {
             <div className="bg-[#f7f9fc] rounded-xl p-2.5 text-center">
               <FontAwesomeIcon icon={faShieldHalved} className="text-gray-400 text-xs mb-1" />
               <p className="text-[10px] text-gray-400 font-medium">Risk</p>
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${risk.cls}`}>{fund.risk || 'N/A'}</span>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${risk.bg} ${risk.text} ${risk.border}`}>{risk.level !== 'N/A' ? `Level ${risk.level}` : 'N/A'}</span>
             </div>
           </div>
 
@@ -209,7 +203,7 @@ export default function FundCard({ fund, index, isGrid }) {
               </div>
               <div>
                 <p className="text-[10px] text-gray-400 font-semibold uppercase tracking-wide">Risk</p>
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${risk.cls}`}>{fund.risk || 'N/A'}</span>
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${risk.bg} ${risk.text} ${risk.border}`}>{risk.level !== 'N/A' ? `Level ${risk.level}` : 'N/A'}</span>
               </div>
             </div>
 
