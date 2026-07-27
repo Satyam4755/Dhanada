@@ -71,7 +71,7 @@ export default function Hero() {
     <section id="home" className="relative min-h-screen overflow-hidden">
       {/* Gradient Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#021d63] via-[#032e92] to-[#0a4fd4]" />
-      
+
       {/* Animated circles */}
       <div className="absolute top-20 right-20 w-96 h-96 rounded-full bg-[#c10000]/10 blur-3xl animate-pulse" />
       <div className="absolute bottom-20 left-10 w-72 h-72 rounded-full bg-white/5 blur-3xl" />
@@ -79,7 +79,7 @@ export default function Hero() {
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-32 pb-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
-          
+
           {/* Left Column */}
           <div>
             <motion.div
@@ -126,18 +126,15 @@ export default function Hero() {
                 <FontAwesomeIcon icon={faChartLine} />
                 Explore Funds
               </a>
-              <a href="#video" className="flex items-center gap-2 text-blue-200 hover:text-white font-medium transition-colors ml-2">
-                <FontAwesomeIcon icon={faCirclePlay} className="text-xl" />
-                Watch Demo
-              </a>
+
             </motion.div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {stats.map((stat, i) => (
                 <StatCard key={i} {...stat} delay={0.4 + i * 0.1} />
               ))}
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column - Dashboard */}
@@ -147,7 +144,7 @@ export default function Hero() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.3 }}
               className="relative">
-              
+
               {/* Main Dashboard Card */}
               <div className="glass rounded-3xl p-6 border border-white/20 shadow-2xl float-anim">
                 {/* Header */}
@@ -213,11 +210,10 @@ export default function Hero() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.7 + i * 0.2 }}
-                  className={`absolute glass rounded-2xl px-4 py-3 border border-white/20 shadow-xl float-anim ${
-                    i === 0 ? '-right-8 top-12' :
+                  className={`absolute glass rounded-2xl px-4 py-3 border border-white/20 shadow-xl float-anim ${i === 0 ? '-right-8 top-12' :
                     i === 1 ? '-left-8 bottom-24' :
-                    '-right-6 bottom-16'
-                  }`}>
+                      '-right-6 bottom-16'
+                    }`}>
                   <div className={`w-8 h-8 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-2`}>
                     <FontAwesomeIcon icon={card.icon} className="text-white text-xs" />
                   </div>
@@ -234,7 +230,7 @@ export default function Hero() {
       {/* Wave bottom */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 80L48 69.3C96 58.7 192 37.3 288 32C384 26.7 480 37.3 576 42.7C672 48 768 48 864 42.7C960 37.3 1056 26.7 1152 26.7C1248 26.7 1344 37.3 1392 42.7L1440 48V80H1392C1344 80 1248 80 1152 80C1056 80 960 80 864 80C768 80 672 80 576 80C480 80 384 80 288 80C192 80 96 80 48 80H0Z" fill="#f7f9fc" />
+          <path d="M0 80L48 69.3C96 58.7 192 37.3 288 32C384 26.7 480 37.3 576 42.7C672 48 768 48 864 42.7C960 37.3 1056 26.7 1152 26.7C1248 26.7 1344 37.3 1392 42.7L1440 48V80H1392C1344 80 1248 80 1152 80C1056 80 960 80 864 80C768 80 672 80 576 80C480 80 384 80 288 80C192 80 96 80 48 80H0Z" fill="#ffffff" />
         </svg>
       </div>
     </section>

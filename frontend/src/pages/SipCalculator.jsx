@@ -87,7 +87,7 @@ function Disclaimer() {
 export default function SipCalculator() {
   const [inputs, setInputs] = useState(DEFAULT_INPUTS)
 
-  const handleReset = () => setInputs(DEFAULT_INPUTS)
+
 
   const results = useMemo(
     () => calculateSIP(inputs.sipAmount, inputs.annualReturn, inputs.duration),
@@ -108,7 +108,7 @@ export default function SipCalculator() {
         <SipHero />
 
         {/* Calculator Form */}
-        <SipCalculatorForm inputs={inputs} setInputs={setInputs} onReset={handleReset} />
+        <SipCalculatorForm inputs={inputs} setInputs={setInputs} />
 
         {/* Summary Cards */}
         <SipSummaryCards results={results} />

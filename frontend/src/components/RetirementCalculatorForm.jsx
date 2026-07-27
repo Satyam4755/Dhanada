@@ -71,7 +71,7 @@ function RadioGroup({ label, options, selected, onChange }) {
   )
 }
 
-export default function RetirementCalculatorForm({ inputs, setInputs, onReset }) {
+export default function RetirementCalculatorForm({ inputs, setInputs }) {
   const handleChange = (key, val) => setInputs(prev => ({ ...prev, [key]: val }))
 
   return (
@@ -94,12 +94,6 @@ export default function RetirementCalculatorForm({ inputs, setInputs, onReset })
                 <p className="text-xs text-gray-400 font-medium">Results update instantly as you type</p>
               </div>
             </div>
-            <button
-              onClick={onReset}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#c10000] hover:text-[#9d0000] transition-colors px-3 py-1.5 rounded-xl border border-red-100 hover:bg-red-50">
-              <FontAwesomeIcon icon={faArrowRotateRight} className="text-xs" />
-              Reset
-            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2">

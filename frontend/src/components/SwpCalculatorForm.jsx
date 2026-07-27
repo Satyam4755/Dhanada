@@ -50,7 +50,7 @@ function InputField({ id, label, prefix, suffix, value, min, max, step = 1, onCh
   )
 }
 
-export default function SwpCalculatorForm({ inputs, setInputs, onReset }) {
+export default function SwpCalculatorForm({ inputs, setInputs }) {
   const handleChange = (key, val) => setInputs(prev => ({ ...prev, [key]: val }))
 
   return (
@@ -73,13 +73,8 @@ export default function SwpCalculatorForm({ inputs, setInputs, onReset }) {
                 <p className="text-xs text-gray-400 font-medium">Results update instantly as you type</p>
               </div>
             </div>
-            <button
-              onClick={onReset}
-              className="flex items-center gap-1.5 text-xs font-semibold text-[#c10000] hover:text-[#9d0000] transition-colors px-3 py-1.5 rounded-xl border border-red-100 hover:bg-red-50">
-              <FontAwesomeIcon icon={faArrowRotateRight} className="text-xs" />
-              Reset
-            </button>
           </div>
+
 
           {/* Main Inputs */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -129,21 +124,7 @@ export default function SwpCalculatorForm({ inputs, setInputs, onReset }) {
             />
           </div>
 
-          {/* CTA */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-2 border-t border-[#e8edf7]">
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className="sm:flex-1 py-3.5 rounded-2xl bg-[#032e92] text-white font-bold text-sm hover:bg-[#021d63] shadow-lg shadow-blue-900/25 transition-all flex items-center justify-center gap-2">
-              <FontAwesomeIcon icon={faCalculator} />
-              Calculate SWP
-            </motion.button>
-            <button
-              onClick={onReset}
-              className="sm:w-auto px-6 py-3.5 rounded-2xl border-2 border-[#e8edf7] text-gray-500 font-semibold text-sm hover:border-[#032e92] hover:text-[#032e92] transition-all">
-              Reset Values
-            </button>
-          </div>
+
         </motion.div>
       </div>
     </section>

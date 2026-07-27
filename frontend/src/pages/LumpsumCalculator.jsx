@@ -73,7 +73,7 @@ function Disclaimer() {
 export default function LumpsumCalculator() {
   const [inputs, setInputs] = useState(DEFAULT_INPUTS)
 
-  const handleReset = () => setInputs(DEFAULT_INPUTS)
+
 
   const results = useMemo(
     () => calculateLumpsum(inputs.totalInvestment, inputs.annualReturn, inputs.duration),
@@ -94,7 +94,7 @@ export default function LumpsumCalculator() {
         <LumpsumHero />
 
         {/* Calculator Form */}
-        <LumpsumCalculatorForm inputs={inputs} setInputs={setInputs} onReset={handleReset} />
+        <LumpsumCalculatorForm inputs={inputs} setInputs={setInputs} />
 
         {/* Summary Cards */}
         <LumpsumSummaryCards results={results} />

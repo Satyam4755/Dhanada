@@ -90,7 +90,7 @@ function Disclaimer() {
 export default function RetirementCalculator() {
   const [inputs, setInputs] = useState(DEFAULT_INPUTS)
 
-  const handleReset = () => setInputs(DEFAULT_INPUTS)
+
 
   const results = useMemo(
     () => calculateRetirement(inputs.age, inputs.monthlySpend, inputs.lifestyle, inputs.savingStyle),
@@ -106,7 +106,7 @@ export default function RetirementCalculator() {
         <RetirementHero />
 
         {/* Calculator Form */}
-        <RetirementCalculatorForm inputs={inputs} setInputs={setInputs} onReset={handleReset} />
+        <RetirementCalculatorForm inputs={inputs} setInputs={setInputs} />
 
         {/* Output Area */}
         <RetirementOutput results={results} />

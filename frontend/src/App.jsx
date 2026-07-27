@@ -8,11 +8,13 @@ import SwpCalculator from './pages/SwpCalculator'
 import LumpsumCalculator from './pages/LumpsumCalculator'
 import StepUpSipCalculator from './pages/StepUpSipCalculator'
 import RetirementCalculator from './pages/RetirementCalculator'
+import ScrollToTop from './components/ScrollToTop'
 import './index.css'
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/funds" element={<Funds />} />

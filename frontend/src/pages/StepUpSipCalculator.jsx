@@ -104,7 +104,7 @@ function Disclaimer() {
 export default function StepUpSipCalculator() {
   const [inputs, setInputs] = useState(DEFAULT_INPUTS)
 
-  const handleReset = () => setInputs(DEFAULT_INPUTS)
+
 
   const results = useMemo(
     () => calculateStepUpSip(inputs.monthlyInvestment, inputs.stepUp, inputs.annualReturn, inputs.duration),
@@ -125,7 +125,7 @@ export default function StepUpSipCalculator() {
         <StepUpSipHero />
 
         {/* Calculator Form */}
-        <StepUpSipCalculatorForm inputs={inputs} setInputs={setInputs} onReset={handleReset} />
+        <StepUpSipCalculatorForm inputs={inputs} setInputs={setInputs} />
 
         {/* Summary Cards */}
         <StepUpSipSummaryCards results={results} />

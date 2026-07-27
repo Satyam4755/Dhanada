@@ -111,7 +111,7 @@ function Disclaimer() {
 export default function SwpCalculator() {
   const [inputs, setInputs] = useState(DEFAULT_INPUTS)
 
-  const handleReset = () => setInputs(DEFAULT_INPUTS)
+
 
   const results = useMemo(
     () => calculateSWP(inputs.totalInvestment, inputs.withdrawalPerMonth, inputs.annualReturn, inputs.duration),
@@ -132,7 +132,7 @@ export default function SwpCalculator() {
         <SwpHero />
 
         {/* Calculator Form */}
-        <SwpCalculatorForm inputs={inputs} setInputs={setInputs} onReset={handleReset} />
+        <SwpCalculatorForm inputs={inputs} setInputs={setInputs} />
 
         {/* Summary Cards */}
         <SwpSummaryCards results={results} />
