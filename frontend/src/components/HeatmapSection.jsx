@@ -80,22 +80,32 @@ export default function HeatmapSection({ fundsData = [] }) {
         >
           <HeatmapHeader timeFilter={timeFilter} setTimeFilter={setTimeFilter} />
 
-          <div className="flex flex-col lg:flex-row flex-1">
-            {/* Left Sidebar - Parent Categories */}
+          <div className="flex flex-col p-4 lg:p-8 gap-6 bg-white w-full">
+            {/* Top Bar - Parent Categories */}
             <CategoryTabs 
               categories={groupedData.map(g => ({ id: g.id, label: g.label }))}
               activeCategory={activeCategory} 
               setActiveCategory={handleCategoryChange} 
             />
 
+            {/* Sub Categories Pills */}
+            {currentCategoryData && currentCategoryData.subCategories.length > 0 && (
+              <SubCategoryTabs 
+                subCategories={currentCategoryData.subCategories}
+                activeSubCategoryId={activeSubCategory}
+                setActiveSubCategoryId={setActiveSubCategory}
+                parentCategoryLabel={currentCategoryData.label}
+              />
+            )}
+
             {/* Center Content - Table */}
-            <div className="flex-1 w-full overflow-hidden bg-white px-2 lg:px-6 pt-6">
+            <div className="w-full overflow-hidden bg-white pt-2 border-t border-[#e8edf7]">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={`${activeCategory}-${activeSubCategory}-${timeFilter}`}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.3 }}
                 >
                   <HeatmapTable 
@@ -106,16 +116,6 @@ export default function HeatmapSection({ fundsData = [] }) {
                 </motion.div>
               </AnimatePresence>
             </div>
-
-            {/* Right Sidebar - Sub Categories */}
-            {currentCategoryData && currentCategoryData.subCategories.length > 0 && (
-              <SubCategoryTabs 
-                subCategories={currentCategoryData.subCategories}
-                activeSubCategoryId={activeSubCategory}
-                setActiveSubCategoryId={setActiveSubCategory}
-                parentCategoryLabel={currentCategoryData.label}
-              />
-            )}
           </div>
         </motion.div>
       </div>

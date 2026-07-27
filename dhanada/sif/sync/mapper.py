@@ -94,10 +94,8 @@ class DataMapper:
         self._create_plan_record(node, sebi_code, p_type, p_opt, p_sub, dataset)
 
     def _extract_plans(self, plans_dict: Dict, sebi_code: str, dataset: SyncDataset):
-        """Recursively extract plans from the nested structure."""
-        if not plans_dict:
-            return
-            
+        if not plans_dict: return
+        
         # Format 1: Flat/List structure with "additional_plans" at the root
         if "name" in plans_dict or "additional_plans" in plans_dict:
             self._parse_flat_plan(plans_dict, sebi_code, dataset)
@@ -113,24 +111,19 @@ class DataMapper:
             mapped_type = "Regular" if "regular" in plan_type_key.lower() else "Direct"
             
             # Level 2: option (growth / idcw)
-            for option_key, option_dict in type_dict.items():
-                if not isinstance(option_dict, dict): continue
-                
+            for option_key, option_val in type_dict.items():
                 mapped_option = "Growth" if "growth" in option_key.lower() else "IDCW"
                 
-                # Check if this is a leaf node (contains isin_code directly)
-                if "isin_code" in option_dict:
-                    self._create_plan_record(option_dict, sebi_code, mapped_type, mapped_option, None, dataset)
-                    
-                # Check for additional_plans array under Growth or direct options
-                if "additional_plans" in option_dict and isinstance(option_dict["additional_plans"], list):
-                    for add_plan in option_dict["additional_plans"]:
-                        self._create_plan_record(add_plan, sebi_code, mapped_type, mapped_option, None, dataset)
-                    
+                # If option_val is a list, it's a leaf node array of records (Growth)
+                if isinstance(option_val, list):
+                    for rec in option_val:
+                        self._create_plan_record(rec, sebi_code, mapped_type, mapped_option, None, dataset)
+                    continue
+
+                if not isinstance(option_val, dict): continue
+                
                 # Level 3: sub_option (payout, reinvestment, transfer, unknown)
-                for sub_opt_key, sub_dict in option_dict.items():
-                    if not isinstance(sub_dict, dict): continue
-                    
+                for sub_opt_key, sub_val in option_val.items():
                     mapped_sub = None
                     key_lower = sub_opt_key.lower()
                     if "payout" in key_lower:
@@ -140,13 +133,21 @@ class DataMapper:
                     elif "transfer" in key_lower:
                         mapped_sub = "Transfer"
                         
-                    # Is this a leaf node?
-                    if "isin_code" in sub_dict:
-                        self._create_plan_record(sub_dict, sebi_code, mapped_type, mapped_option, mapped_sub, dataset)
+                    # If sub_val is a list, it's a leaf node array of records (IDCW subtypes)
+                    if isinstance(sub_val, list):
+                        for rec in sub_val:
+                            self._create_plan_record(rec, sebi_code, mapped_type, mapped_option, mapped_sub, dataset)
+                        continue
+                        
+                    if not isinstance(sub_val, dict): continue
+                        
+                    # Backwards compatibility: Check if this is a leaf node dict
+                    if "isin_code" in sub_val:
+                        self._create_plan_record(sub_val, sebi_code, mapped_type, mapped_option, mapped_sub, dataset)
                     
-                    # Handle additional_plans array inside unknown or other nodes
-                    if "additional_plans" in sub_dict and isinstance(sub_dict["additional_plans"], list):
-                        for add_plan in sub_dict["additional_plans"]:
+                    # Backwards compatibility: Handle additional_plans array
+                    if "additional_plans" in sub_val and isinstance(sub_val["additional_plans"], list):
+                        for add_plan in sub_val["additional_plans"]:
                             self._create_plan_record(add_plan, sebi_code, mapped_type, mapped_option, mapped_sub, dataset)
 
     def _parse_managers(self, raw_managers_list: List[Dict], dataset: SyncDataset) -> List[SchemeFundManager]:

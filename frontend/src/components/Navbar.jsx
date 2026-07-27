@@ -17,7 +17,7 @@ const navLinks = [
       { label: 'Featured Fund', href: '/#featured' },
     ]
   },
-  { label: 'Products', href: '/#products' },
+  { label: 'Compare', href: '/compare' },
   {
     label: 'Calculators', href: '/calculators/sip', dropdown: [
       { label: 'SIP Calculator', href: '/calculators/sip' },
@@ -27,10 +27,10 @@ const navLinks = [
       { label: 'Retirement Calculator', href: '/calculators/retirement' },
     ]
   },
-  { label: 'Research', href: '/#research' },
+  // { label: 'Research', href: '/#research' },
   { label: 'Blog', href: '/#blog' },
-  { label: 'About', href: '/#about' },
-  { label: 'Contact', href: '/#contact' },
+  // { label: 'About', href: '/#about' },
+  // { label: 'Contact', href: '/#contact' },
 ]
 
 export default function Navbar() {
@@ -71,8 +71,8 @@ export default function Navbar() {
                 onMouseLeave={() => setActiveDropdown(null)}>
                 <Link to={link.href}
                   className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-[#eef4ff] hover:text-[#032e92] ${location.pathname === link.href
-                      ? 'bg-[#eef4ff] text-[#032e92] font-semibold'
-                      : scrolled ? 'text-gray-700' : 'text-gray-800'
+                    ? 'bg-[#eef4ff] text-[#032e92] font-semibold'
+                    : scrolled ? 'text-gray-700' : 'text-gray-800'
                     }`}>
                   {link.label}
                   {link.dropdown && (
@@ -114,8 +114,8 @@ export default function Navbar() {
               <FontAwesomeIcon icon={faBell} className="text-sm" />
             </button>
             <a href="#login" className={`px-5 py-2 rounded-full text-sm font-semibold border-2 transition-all duration-200 hover:shadow-md ${scrolled
-                ? 'border-[#032e92] text-[#032e92] hover:bg-[#032e92] hover:text-white'
-                : 'border-[#032e92] text-[#032e92] hover:bg-[#032e92] hover:text-white bg-white/80'
+              ? 'border-[#032e92] text-[#032e92] hover:bg-[#032e92] hover:text-white'
+              : 'border-[#032e92] text-[#032e92] hover:bg-[#032e92] hover:text-white bg-white/80'
               }`}>
               Login
             </a>

@@ -62,7 +62,7 @@ export default function HeatmapTable({ funds, timeFilter, activeSubCategoryLabel
         <table className="w-full min-w-[700px] border-collapse">
           <thead>
             <tr>
-              <th className="sticky left-0 bg-white z-20 py-4 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wide border-b border-[#e8edf7] min-w-[200px]">
+              <th className="sticky left-0 bg-white z-20 py-4 px-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wide border-b border-[#e8edf7] min-w-[280px] lg:min-w-[400px]">
                 Fund Name
               </th>
               {displayPeriods.map((p) => (
@@ -86,9 +86,9 @@ export default function HeatmapTable({ funds, timeFilter, activeSubCategoryLabel
                     <div className="w-8 h-8 rounded-full bg-[#eef4ff] text-[#032e92] font-bold text-xs flex items-center justify-center flex-shrink-0">
                       {fund.name.charAt(0).toUpperCase()}
                     </div>
-                    <div>
-                      <p className="font-bold text-sm text-gray-900 truncate max-w-[160px]" title={fund.name}>{fund.name}</p>
-                      <p className="text-xs text-gray-400 font-medium truncate max-w-[160px]">{fund.amc}</p>
+                    <div className="flex flex-col overflow-hidden max-w-[220px] lg:max-w-[400px]">
+                      <p className="font-bold text-sm text-gray-900 truncate" title={fund.name}>{fund.name}</p>
+                      <p className="text-xs text-gray-400 font-medium truncate">{fund.amc}</p>
                     </div>
                   </div>
                 </td>

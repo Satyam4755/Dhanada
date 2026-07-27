@@ -1,339 +1,258 @@
-import { useState, useEffect, useMemo } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSpinner, faCircleExclamation, faPlus, faXmark, faCheck, faShieldHalved } from '@fortawesome/free-solid-svg-icons'
-import Navbar from '../components/Navbar'
-import Footer from '../components/Footer'
-import PlanSelector from '../components/PlanSelector'
-import { fetchFundsList, fetchFundDetails } from '../api/funds'
-import { getRiskLevelConfig } from '../utils/risk'
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import CompareHero from '../components/CompareHero';
+import FundSelector from '../components/FundSelector';
+import SelectedFundSummary from '../components/SelectedFundSummary';
+import ComparisonTable from '../components/ComparisonTable';
+import PerformanceChart from '../components/PerformanceChart';
+import ReturnsCards from '../components/ReturnsCards';
+import RiskComparison from '../components/RiskComparison';
+import PortfolioComparison from '../components/PortfolioComparison';
+import SectorAllocation from '../components/SectorAllocation';
+import TopHoldingsTable from '../components/TopHoldingsTable';
+import FundManagersComparison from '../components/FundManagersComparison';
+import ProsConsSection from '../components/ProsConsSection';
+import AIRecommendation from '../components/AIRecommendation';
+import CompareRelatedFunds from '../components/CompareRelatedFunds';
+import Newsletter from '../components/Newsletter';
 
-function formatCurrency(val) {
-  if (val == null || val === 'N/A') return 'N/A'
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val)
-}
+import { fetchFundsList, fetchFundDetails } from '../api/funds';
 
-function formatPct(val) {
-  if (val == null || val === 'N/A') return 'N/A'
-  return `${Number(val).toFixed(2)}%`
-}
-
-function formatDate(val) {
-  if (!val) return 'N/A'
-  return new Date(val).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })
-}
-
-// Custom hook to manage plan state per fund
-function useFundPlan(apiFund) {
-  const plans = apiFund?.plans || []
+function mapToPremiumFormat(apiFund, isBasicList = false) {
+  if (!apiFund) return null;
+  const plans = apiFund.plans || [];
+  const selectedPlan = apiFund.defaultPlan || (plans.length > 0 ? plans[0] : {});
+  const perf = selectedPlan?.performance_data || {};
   
-  // Available options
-  const availableTypes = useMemo(() => [...new Set(plans.map(p => p.type).filter(Boolean))], [plans])
-  
-  const [selectedType, setSelectedType] = useState('')
-  const [selectedOption, setSelectedOption] = useState('')
-  const [selectedSubOption, setSelectedSubOption] = useState('')
+  // Safe returns object
+  const returns = {
+    oneWeek: perf['1_week'] ? Number(perf['1_week']).toFixed(2) : 'N/A',
+    oneMonth: perf['1_month'] ? Number(perf['1_month']).toFixed(2) : 'N/A',
+    threeMonth: perf['3_months'] ? Number(perf['3_months']).toFixed(2) : 'N/A',
+    sixMonth: perf['6_months'] ? Number(perf['6_months']).toFixed(2) : 'N/A',
+    oneYear: perf['1_year'] ? Number(perf['1_year']).toFixed(2) : 'N/A',
+    threeYear: perf['3_years'] ? Number(perf['3_years']).toFixed(2) : 'N/A',
+    fiveYear: perf['5_years'] ? Number(perf['5_years']).toFixed(2) : 'N/A',
+    sinceLaunch: perf['since_inception'] ? Number(perf['since_inception']).toFixed(2) : 'N/A',
+  };
 
-  // Initialize with default plan
-  useEffect(() => {
-    if (apiFund?.defaultPlan) {
-      setSelectedType(apiFund.defaultPlan.type || '')
-      setSelectedOption(apiFund.defaultPlan.option || '')
-      setSelectedSubOption(apiFund.defaultPlan.sub_option || '')
-    } else if (plans.length > 0) {
-      setSelectedType(plans[0].type || '')
-      setSelectedOption(plans[0].option || '')
-      setSelectedSubOption(plans[0].sub_option || '')
+  const rawRisk = apiFund.riskometer_as_on_date || apiFund.riskometer_at_launch || apiFund.risk_level || apiFund.risk_band || apiFund.riskLevel || apiFund.risk || 'Level 3';
+  let riskNumeric = 3;
+  if (typeof rawRisk === 'string') {
+    const match = rawRisk.match(/\d+/);
+    if (match) {
+      riskNumeric = parseInt(match[0], 10);
+      if (riskNumeric > 5) riskNumeric = 5;
+      if (riskNumeric < 1) riskNumeric = 1;
     }
-  }, [apiFund, plans])
-
-  const availableOptions = useMemo(() => {
-    return [...new Set(plans.filter(p => p.type === selectedType).map(p => p.option).filter(Boolean))]
-  }, [plans, selectedType])
-
-  useEffect(() => {
-    if (selectedOption && !availableOptions.includes(selectedOption) && availableOptions.length > 0) {
-      setSelectedOption(availableOptions[0])
-    }
-  }, [availableOptions, selectedOption])
-
-  const availableSubOptions = useMemo(() => {
-    return [...new Set(plans.filter(p => p.type === selectedType && p.option === selectedOption).map(p => p.sub_option).filter(Boolean))]
-  }, [plans, selectedType, selectedOption])
-
-  useEffect(() => {
-    if (selectedSubOption && !availableSubOptions.includes(selectedSubOption) && availableSubOptions.length > 0) {
-      setSelectedSubOption(availableSubOptions[0])
-    } else if (!availableSubOptions.includes(selectedSubOption)) {
-      setSelectedSubOption('')
-    }
-  }, [availableSubOptions, selectedSubOption])
-
-  const selectedPlan = useMemo(() => {
-    return plans.find(p => 
-      p.type === selectedType && 
-      p.option === selectedOption && 
-      (p.sub_option || '') === (selectedSubOption || '')
-    ) || plans[0]
-  }, [plans, selectedType, selectedOption, selectedSubOption])
-
-  // Processed fund wrapper
-  const fund = useMemo(() => {
-    if (!apiFund) return null
-    
-    return {
-      ...apiFund,
-      nav: selectedPlan?.nav ? formatCurrency(selectedPlan.nav) : 'N/A',
-      navDate: formatDate(selectedPlan?.nav_date),
-      returns1M: formatPct(selectedPlan?.performance_data?.['1_month']),
-      returns3M: formatPct(selectedPlan?.performance_data?.['3_months']),
-      returns6M: formatPct(selectedPlan?.performance_data?.['6_months']),
-      returns1Y: formatPct(selectedPlan?.performance_data?.['1_year']),
-      returns3Y: formatPct(selectedPlan?.performance_data?.['3_years']),
-      returns5Y: formatPct(selectedPlan?.performance_data?.['5_years']),
-      returnsLaunch: formatPct(selectedPlan?.performance_data?.['since_inception']),
-      isin: selectedPlan?.isin,
-      sifCode: selectedPlan?.sif_code,
-    }
-  }, [apiFund, selectedPlan])
+  } else if (typeof rawRisk === 'number') {
+    riskNumeric = rawRisk;
+    if (riskNumeric > 5) riskNumeric = 5;
+    if (riskNumeric < 1) riskNumeric = 1;
+  }
+  const riskLabel = typeof rawRisk === 'string' && !rawRisk.match(/\d+/) 
+    ? rawRisk 
+    : `Level ${riskNumeric}`;
 
   return {
-    fund,
-    planSelectorProps: {
-      availableTypes, availableOptions, availableSubOptions, availablePeriods: [],
-      selectedType, selectedOption, selectedSubOption, selectedPeriod: '',
-      setSelectedType, setSelectedOption, setSelectedSubOption, setSelectedPeriod: () => {},
-      fund
-    }
-  }
-}
-
-function CompareColumn({ id, onRemove, allFundsList, category }) {
-  const [apiFund, setApiFund] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [isEditing, setIsEditing] = useState(!id)
-  
-  // Available funds to pick from (same category)
-  const availableFunds = useMemo(() => {
-    return allFundsList.filter(f => f.category === category)
-  }, [allFundsList, category])
-
-  useEffect(() => {
-    if (id) {
-      setLoading(true)
-      setIsEditing(false)
-      fetchFundDetails(id)
-        .then(data => {
-          setApiFund(data)
-          setError(null)
-        })
-        .catch(err => setError(err.message))
-        .finally(() => setLoading(false))
-    } else {
-      setApiFund(null)
-      setIsEditing(true)
-    }
-  }, [id])
-
-  const { fund, planSelectorProps } = useFundPlan(apiFund)
-
-  if (loading) {
-    return (
-      <div className="flex-1 border border-[#e8edf7] rounded-3xl bg-white p-8 flex flex-col items-center justify-center min-h-[500px]">
-        <FontAwesomeIcon icon={faSpinner} className="text-3xl text-[#032e92] animate-spin mb-4" />
-        <p className="text-gray-500 font-semibold text-sm">Loading fund...</p>
-      </div>
-    )
-  }
-
-  if (isEditing) {
-    return (
-      <div className="flex-1 border-2 border-dashed border-[#e8edf7] rounded-3xl bg-gray-50/50 p-8 flex flex-col items-center justify-center min-h-[500px] relative">
-        {onRemove && (
-          <button onClick={onRemove} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition-all flex items-center justify-center shadow-sm">
-            <FontAwesomeIcon icon={faXmark} />
-          </button>
-        )}
-        <div className="w-16 h-16 rounded-full bg-[#eef4ff] flex items-center justify-center mb-6">
-          <FontAwesomeIcon icon={faPlus} className="text-[#032e92] text-xl" />
-        </div>
-        <h3 className="font-bold text-gray-900 mb-2">Add Fund to Compare</h3>
-        <p className="text-sm text-gray-500 text-center mb-6 max-w-[250px]">
-          Select another {category || ''} fund to compare side-by-side.
-        </p>
-        
-        <select 
-          className="w-full max-w-[280px] bg-white border border-[#e8edf7] text-gray-700 text-sm font-semibold rounded-xl px-4 py-3 outline-none focus:border-[#032e92] shadow-sm appearance-none cursor-pointer"
-          onChange={(e) => {
-            if (e.target.value) {
-              window.location.search += (window.location.search ? '&' : '?') + 'compare=' + e.target.value
-            }
-          }}
-          defaultValue="">
-          <option value="" disabled>Select a fund...</option>
-          {availableFunds.map(f => (
-            <option key={f.id} value={f.id}>{f.name}</option>
-          ))}
-        </select>
-      </div>
-    )
-  }
-
-  if (error || !fund) {
-    return (
-      <div className="flex-1 border border-red-100 rounded-3xl bg-red-50 p-8 flex flex-col items-center justify-center min-h-[500px] relative">
-        {onRemove && (
-          <button onClick={onRemove} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white border border-red-200 text-red-400 hover:text-red-600 transition-all flex items-center justify-center shadow-sm">
-            <FontAwesomeIcon icon={faXmark} />
-          </button>
-        )}
-        <FontAwesomeIcon icon={faCircleExclamation} className="text-3xl text-red-400 mb-4" />
-        <p className="text-red-600 font-semibold text-sm text-center">Failed to load fund</p>
-      </div>
-    )
-  }
-
-  const renderRow = (label, value, highlight = false) => {
-    const risk = getRiskLevelConfig(fund.riskLevel)
-    return (
-      <div className={`px-4 py-3 border-b border-[#e8edf7] ${highlight ? 'bg-[#f7f9fc]' : ''}`}>
-        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">{label}</p>
-        {label === 'Risk' ? (
-          <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded border ${risk.bg} ${risk.text} ${risk.border}`}>
-            <FontAwesomeIcon icon={faShieldHalved} className="text-[10px]" />
-            <span className="text-xs font-bold whitespace-nowrap">{risk.level !== 'N/A' ? `Level ${risk.level}` : 'N/A'}</span>
-          </div>
-        ) : (
-          <p className="text-sm font-semibold text-gray-800 break-words">{value || 'N/A'}</p>
-        )}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex-1 border border-[#e8edf7] rounded-3xl bg-white shadow-xl shadow-blue-900/5 relative overflow-hidden flex flex-col min-w-[320px]">
-      {onRemove && (
-        <button onClick={onRemove} className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/80 backdrop-blur border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition-all flex items-center justify-center shadow-sm">
-          <FontAwesomeIcon icon={faXmark} />
-        </button>
-      )}
-      
-      {/* Header */}
-      <div className="p-6 bg-[#f7f9fc] border-b border-[#e8edf7]">
-        <h2 className="text-lg font-bold text-gray-900 leading-tight mb-2 pr-8">{fund.name}</h2>
-        <p className="text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-100 inline-block px-2.5 py-1 rounded-lg">{fund.amc}</p>
-      </div>
-
-      {/* Plan Selector */}
-      <div className="p-4 border-b border-[#e8edf7] bg-white">
-        <PlanSelector {...planSelectorProps} className="!border-none !shadow-none !p-0 !gap-2 flex-col items-start [&>div:first-child]:hidden [&>div:last-child]:mt-2 [&>div:last-child]:text-left [&>div:last-child]:w-full [&>select]:w-full" />
-      </div>
-
-      {/* Content */}
-      <div className="p-6 flex-1 bg-white">
-        {renderRow('Category', fund.category, true)}
-        {renderRow('Asset Class', fund.assetClass)}
-        {renderRow('Risk', fund.riskLevel, true)}
-        {renderRow('Current NAV', `${fund.nav} (${fund.navDate})`, true)}
-        {renderRow('1 Month Return', fund.returns1M)}
-        {renderRow('3 Month Return', fund.returns3M)}
-        {renderRow('6 Month Return', fund.returns6M)}
-        {renderRow('1 Year Return', fund.returns1Y, true)}
-        {renderRow('3 Year Return', fund.returns3Y, true)}
-        {renderRow('5 Year Return', fund.returns5Y, true)}
-        {renderRow('Since Launch', fund.returnsLaunch)}
-        {renderRow('Min Investment', fund.minInvestmentText || (fund.minInvestment ? formatCurrency(fund.minInvestment) : 'N/A'))}
-        {renderRow('Launch Date', formatDate(fund.launchDate))}
-        {renderRow('Benchmark', fund.benchmarkTier1)}
-      </div>
-      
-      {/* Footer Action */}
-      <div className="p-6 bg-gray-50 border-t border-[#e8edf7]">
-        <Link to={`/funds/${encodeURIComponent(fund.id)}`} className="block w-full py-3 rounded-2xl bg-[#032e92] text-white font-bold text-sm text-center hover:bg-[#021d63] shadow-md transition-all">
-          View Details
-        </Link>
-      </div>
-    </div>
-  )
+    ...apiFund,
+    id: apiFund.id || apiFund.name || 'unknown-id',
+    name: apiFund.fund_name || apiFund.name || 'Unknown Fund',
+    category: apiFund.category || 'Equity',
+    subCategory: apiFund.subCategory || 'N/A',
+    risk: riskLabel,
+    riskNumeric: riskNumeric,
+    nav: selectedPlan?.nav ? Number(selectedPlan.nav).toFixed(2) : 'N/A',
+    aum: apiFund.aum || 'N/A',
+    expenseRatio: apiFund.expenseRatio || 'N/A',
+    returns,
+    riskMetrics: apiFund.riskMetrics || {
+      standardDeviation: 'N/A',
+      beta: 'N/A',
+      sharpeRatio: 'N/A',
+      sortinoRatio: 'N/A',
+      alpha: 'N/A'
+    },
+    benchmark: apiFund.benchmark || 'N/A',
+    lockIn: apiFund.lockIn || 'None',
+    exitLoad: apiFund.exitLoad || 'N/A',
+    rating: apiFund.rating || 4,
+    minSip: apiFund.minSip || 500,
+    allocation: apiFund.allocation || apiFund.portfolio || { equity: 95, debt: 0, cash: 5 },
+    portfolio: apiFund.portfolio || apiFund.allocation || { equity: 95, debt: 0, cash: 5 },
+    sectors: apiFund.sectors || [],
+    holdings: apiFund.holdings || apiFund.topHoldings || [],
+    topHoldings: apiFund.topHoldings || apiFund.holdings || [],
+    manager: apiFund.manager || (apiFund.managers && apiFund.managers[0]) || { name: 'Unknown Manager', experience: 'N/A', qualification: 'N/A', fundsManaged: 'N/A', linkedin: '#' },
+    managers: apiFund.managers || [],
+    pros: apiFund.pros || ["Strong long-term performance"],
+    cons: apiFund.cons || ["Subject to market risks"],
+    recommendations: apiFund.recommendations || []
+  };
 }
 
 export default function CompareFunds() {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const primaryId = searchParams.get('primary')
-  const compareIds = searchParams.getAll('compare')
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [allFunds, setAllFunds] = useState([]);
+  const [selectedFunds, setSelectedFunds] = useState([null, null, null]);
+  const [activeCategory, setActiveCategory] = useState(null);
   
-  const [allFundsList, setAllFundsList] = useState([])
-  const [category, setCategory] = useState(null)
-  
+  // Load funds list on mount
   useEffect(() => {
-    fetchFundsList().then(list => {
-      setAllFundsList(list)
-      // Determine category from primary fund
-      if (primaryId) {
-        const primary = list.find(f => (f.id === primaryId || f.sebi_code === primaryId))
-        if (primary) {
-          setCategory(primary.category)
+    fetchFundsList().then(data => {
+      const funds = Array.isArray(data) ? data : data.data || [];
+      // Map the basic list to ensure CompareRelatedFunds gets the required structure
+      const mappedList = funds.map(f => mapToPremiumFormat(f, true));
+      setAllFunds(mappedList);
+    }).catch(err => console.error("Failed to load funds list", err));
+  }, []);
+
+  // Sync selected funds from URL
+  useEffect(() => {
+    const compareIds = searchParams.getAll('compare');
+    const newSelected = [null, null, null];
+    let hasChanges = false;
+    
+    // We only take the first 3
+    const idsToFetch = compareIds.slice(0, 3);
+    
+    const loadDetails = async () => {
+      for (let i = 0; i < 3; i++) {
+        const id = idsToFetch[i];
+        const currentFund = selectedFunds[i];
+        
+        if (id) {
+          if (!currentFund || currentFund.id !== id) {
+            try {
+              const detail = await fetchFundDetails(id);
+              newSelected[i] = mapToPremiumFormat(detail);
+              hasChanges = true;
+            } catch (err) {
+              console.error("Failed to fetch fund detail for", id, err);
+            }
+          } else {
+            newSelected[i] = currentFund;
+          }
+        } else if (currentFund) {
+          // It was removed from URL
+          newSelected[i] = null;
+          hasChanges = true;
         }
       }
-    }).catch(console.error)
-  }, [primaryId])
+      
+      if (hasChanges) {
+        setSelectedFunds(newSelected);
+      }
+    };
+    
+    loadDetails();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.toString()]);
 
-  const columns = [
-    { id: primaryId, isPrimary: true },
-    ...compareIds.map(id => ({ id, isPrimary: false }))
-  ]
+  useEffect(() => {
+    const firstFund = selectedFunds.find(f => f !== null);
+    setActiveCategory(firstFund ? firstFund.category : null);
+  }, [selectedFunds]);
 
-  // Ensure there are always at least 2 columns, pad with empty columns up to 3 max
-  if (columns.length < 2) columns.push({ id: null, isPrimary: false })
+  const handleFundSelect = useCallback((index, id) => {
+    const compareIds = searchParams.getAll('compare');
+    const newIds = [...compareIds];
+    
+    // ensure array is size 3
+    while(newIds.length < 3) newIds.push('');
+    
+    newIds[index] = id || '';
+    
+    // clean up empty slots at the end or middle
+    const finalIds = newIds.filter(Boolean);
+    
+    if (finalIds.length === 0) {
+      setSearchParams({});
+    } else {
+      setSearchParams({ compare: finalIds });
+    }
+  }, [searchParams, setSearchParams]);
 
-  const removeCompare = (idToRemove) => {
-    const newParams = new URLSearchParams(searchParams)
-    newParams.delete('compare')
-    compareIds.filter(id => id !== idToRemove).forEach(id => newParams.append('compare', id))
-    setSearchParams(newParams)
-  }
+  const handleReset = useCallback(() => {
+    setSearchParams({});
+  }, [setSearchParams]);
+
+  const hasFundsToCompare = selectedFunds.some(f => f !== null);
+
+  useEffect(() => {
+    document.title = "Compare Funds | SIF Platform";
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#f7f9fc] flex flex-col">
-      <Navbar />
-      
-      <main className="flex-1 pt-24 pb-20 max-w-7xl mx-auto px-6 lg:px-8 w-full">
+      <div className="min-h-screen bg-[#f7f9fc] font-sans">
         
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-10 text-center">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-[#eef4ff] text-[#032e92] text-sm font-semibold mb-4">
-            ⚖️ Fund Comparison
-          </span>
-          <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Compare <span className="gradient-text">Side-by-Side</span>
-          </h1>
-          <p className="text-gray-500 font-medium max-w-2xl mx-auto">
-            {category 
-              ? `Comparing funds in the "${category}" category. Evaluate performance, risk, and metrics to make the right choice.`
-              : 'Select funds to compare their performance and metrics.'}
-          </p>
-        </motion.div>
+        <Navbar />
+        
+        <main>
+          <CompareHero />
 
-        <div className="flex gap-6 overflow-x-auto pb-8 snap-x">
-          {columns.map((col, index) => (
-            <div key={`${col.id}-${index}`} className="flex-1 min-w-[320px] snap-center">
-              <CompareColumn 
-                id={col.id} 
-                onRemove={!col.isPrimary && col.id ? () => removeCompare(col.id) : null}
-                allFundsList={allFundsList}
-                category={category}
-              />
-            </div>
-          ))}
-        </div>
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 -mt-16 lg:-mt-24 relative z-20">
+            
+            <FundSelector 
+              selectedFunds={selectedFunds} 
+              onFundSelect={handleFundSelect} 
+              onReset={handleReset}
+              availableFunds={allFunds} 
+            />
 
-      </main>
+            {hasFundsToCompare ? (
+              <div className="animate-in fade-in duration-500">
+                <SelectedFundSummary selectedFunds={selectedFunds} />
+                <ComparisonTable selectedFunds={selectedFunds} />
+                <PerformanceChart selectedFunds={selectedFunds} />
+                <ReturnsCards selectedFunds={selectedFunds} />
+                
+                <div className="grid lg:grid-cols-2 gap-6 mb-12">
+                  <div className="lg:col-span-2">
+                    <RiskComparison selectedFunds={selectedFunds} />
+                  </div>
+                </div>
 
-      <Footer />
-    </div>
-  )
+                <PortfolioComparison selectedFunds={selectedFunds} />
+                {/* TODO:
+                    Re-enable Sector Allocation comparison once Frappe provides complete
+                    sector allocation data for all Specialized Investment Funds.
+                <SectorAllocation selectedFunds={selectedFunds} /> 
+                */}
+                {/* TODO:
+                    Re-enable Top 10 Holdings once portfolio holdings
+                    become available from the Frappe backend.
+                <TopHoldingsTable selectedFunds={selectedFunds} /> 
+                */}
+                
+                {/* TODO:
+                    Re-enable Pros & Cons once dynamic analysis
+                    is generated from actual scheme data or AI insights.
+                <ProsConsSection selectedFunds={selectedFunds} /> 
+                */}
+                
+                <AIRecommendation selectedFunds={selectedFunds} />
+              </div>
+            ) : (
+              <div className="py-20 text-center">
+                <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="text-4xl opacity-50">📊</span>
+                </div>
+                <h3 className="text-2xl font-bold text-[#1e293b] font-serif mb-2">No Funds Selected</h3>
+                <p className="text-[#64748b] text-sm max-w-md mx-auto">Please search and select up to 3 funds from the dropdowns above to begin your side-by-side comparison.</p>
+              </div>
+            )}
+            
+            <CompareRelatedFunds selectedCategory={activeCategory} allFundsList={allFunds} />
+            
+          </div>
+          
+          <Newsletter />
+        </main>
+
+        <Footer />
+      </div>
+  );
 }
