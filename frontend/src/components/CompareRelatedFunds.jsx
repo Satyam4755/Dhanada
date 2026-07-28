@@ -1,8 +1,11 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
+import { Navigation, Pagination } from 'swiper/modules';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 import 'swiper/css';
+import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 export default function CompareRelatedFunds({ selectedCategory, allFundsList = [] }) {
@@ -28,15 +31,15 @@ export default function CompareRelatedFunds({ selectedCategory, allFundsList = [
       </div>
 
       <Swiper
-        modules={[Autoplay, Pagination]}
+        modules={[Navigation, Pagination]}
         spaceBetween={24}
         slidesPerView={1}
+        navigation
         breakpoints={{
           640: { slidesPerView: 2 },
           1024: { slidesPerView: 3 },
           1280: { slidesPerView: 4 },
         }}
-        autoplay={{ delay: 3000, disableOnInteraction: false }}
         pagination={{ clickable: true, dynamicBullets: true }}
         className="pb-12 !px-2"
       >
@@ -72,9 +75,12 @@ export default function CompareRelatedFunds({ selectedCategory, allFundsList = [
                 </div>
               </div>
 
-              <button className="w-full bg-[#f7f9fc] text-[#032e92] border border-[#e8edf7] py-2.5 rounded-xl text-sm font-bold group-hover:bg-[#032e92] group-hover:text-white transition-colors">
+              <Link 
+                to={`/funds/${encodeURIComponent(fund.id || fund.name)}`}
+                className="w-full bg-[#f7f9fc] text-[#032e92] border border-[#e8edf7] py-2.5 rounded-xl text-sm font-bold group-hover:bg-[#032e92] group-hover:text-white transition-colors text-center block"
+              >
                 View Details
-              </button>
+              </Link>
 
             </div>
           </SwiperSlide>

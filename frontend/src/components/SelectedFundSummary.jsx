@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 export default function SelectedFundSummary({ selectedFunds }) {
   const activeFunds = selectedFunds.filter(f => f !== null);
@@ -39,7 +40,7 @@ export default function SelectedFundSummary({ selectedFunds }) {
                 </div>
                 <div className="bg-[#f7f9fc] rounded-xl p-3 border border-[#e8edf7]">
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Sharpe</p>
-                  <p className="text-base font-bold text-[#1e293b]">{fund.riskMetrics.sharpeRatio}</p>
+                  <p className="text-base font-bold text-[#1e293b]">{fund.riskMetrics?.sharpeRatio || 'N/A'}</p>
                 </div>
               </div>
             </div>
@@ -53,9 +54,12 @@ export default function SelectedFundSummary({ selectedFunds }) {
               }`}>
                 {fund.risk}
               </span>
-              <button className="text-[#032e92] text-sm font-bold hover:text-[#c10000] transition-colors">
+              <Link 
+                to={`/funds/${encodeURIComponent(fund.id || fund.scheme_code || fund.name)}`} 
+                className="text-[#032e92] text-sm font-bold hover:text-[#c10000] transition-colors"
+              >
                 View Details
-              </button>
+              </Link>
             </div>
           </motion.div>
         ))}

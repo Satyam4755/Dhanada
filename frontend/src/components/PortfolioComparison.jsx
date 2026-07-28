@@ -60,11 +60,10 @@ export default function PortfolioComparison({ selectedFunds }) {
           const options = {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '70%',
+            cutout: '72%',
             plugins: {
               legend: {
-                position: 'bottom',
-                labels: { font: { family: 'Poppins', size: 10 }, usePointStyle: true, padding: 12 }
+                display: false
               },
               tooltip: {
                 backgroundColor: '#1e293b',
@@ -80,19 +79,55 @@ export default function PortfolioComparison({ selectedFunds }) {
           };
 
           return (
-            <div key={index} className="bg-white rounded-3xl p-6 border border-[#e8edf7] shadow-lg shadow-blue-900/5">
-              <h4 className="text-sm font-bold text-[#1e293b] text-center mb-6 h-10 line-clamp-2">{fund.name}</h4>
-              <div className="h-48 relative">
-                <Doughnut data={data} options={options} />
-                {maxVal > 0 && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="text-center pb-6">
-                      <span className="text-xl font-bold text-[#032e92] block">{maxVal}%</span>
-                      <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest block truncate max-w-[80px]">{majorName || 'Major'}</span>
+            <div key={index} className="bg-white rounded-3xl p-6 border border-[#e8edf7] shadow-lg shadow-blue-900/5 flex flex-col justify-between">
+              <div>
+                <h4 className="text-sm font-bold text-[#1e293b] text-center mb-4 h-10 line-clamp-2">{fund.name}</h4>
+                
+                {/* Donut Chart Container with perfectly centered text */}
+                <div className="h-48 relative flex items-center justify-center">
+                  <Doughnut data={data} options={options} />
+                  {maxVal > 0 && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="text-center">
+                        <span className="text-2xl font-extrabold text-[#032e92] block leading-none">{maxVal}%</span>
+                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mt-1 truncate max-w-[90px]">{majorName || 'Major'}</span>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
+
+              {/* Asset Allocation Breakdown List */}
+              <div className="mt-5 pt-4 border-t border-[#f1f5f9] space-y-2.5">
+                {allocations.map((item, i) => {
+                  const val = item.value != null ? item.value : (item.max != null ? item.max : 0);
+                  const itemColor = bgColors[i % bgColors.length];
+                  return (
+                    <div key={i} className="flex items-start justify-between gap-3 text-xs">
+                      <div className="flex items-start gap-2 min-w-0 flex-1">
+                        <span 
+                          className="w-2.5 h-2.5 rounded-full shrink-0 mt-1" 
+                          style={{ backgroundColor: itemColor }}
+                        />
+                        <span className="font-semibold text-gray-700 leading-snug break-words flex-1">
+                          {item.name}
+                        </span>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="font-bold text-[#1e293b]">
+                          {val}%
+                        </span>
+                        {item.min != null && item.max != null && (item.min !== item.max) && (
+                          <span className="block text-[10px] text-gray-400 font-medium">
+                            ({item.min}% - {item.max}%)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
             </div>
           );
         })}
