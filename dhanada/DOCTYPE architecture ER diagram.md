@@ -8,7 +8,6 @@ flowchart TD
 
     A --> B["Filter Editable Fields
 
-    scheme_name,
     risk_band,
     scheme_objective,
     exit_load,
