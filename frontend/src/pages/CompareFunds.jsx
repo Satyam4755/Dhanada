@@ -38,23 +38,52 @@ function mapToPremiumFormat(apiFund, isBasicList = false) {
     sinceLaunch: perf['since_inception'] ? Number(perf['since_inception']).toFixed(2) : 'N/A',
   };
 
-  const rawRisk = apiFund.riskometer_as_on_date || apiFund.riskometer_at_launch || apiFund.risk_level || apiFund.risk_band || apiFund.riskLevel || apiFund.risk || 'Level 3';
-  let riskNumeric = 3;
-  if (typeof rawRisk === 'string') {
-    const match = rawRisk.match(/\d+/);
-    if (match) {
-      riskNumeric = parseInt(match[0], 10);
+  const rawRisk = apiFund.riskometer_as_on_date || apiFund.riskometer_at_launch || apiFund.risk_level || apiFund.risk_band || apiFund.riskLevel || apiFund.risk;
+  let riskNumeric = null;
+  let riskLabel = "N/A";
+
+  if (rawRisk && rawRisk !== 'N/A' && rawRisk !== 'None' && rawRisk !== 'null' && rawRisk !== 'undefined') {
+    if (typeof rawRisk === 'string') {
+      const match = rawRisk.match(/\d+/);
+      if (match) {
+        riskNumeric = parseInt(match[0], 10);
+        if (riskNumeric > 5) riskNumeric = 5;
+        if (riskNumeric < 1) riskNumeric = 1;
+        riskLabel = `Level ${riskNumeric}`;
+      } else {
+        riskLabel = rawRisk;
+        const lower = rawRisk.toLowerCase();
+        if (lower.includes('very high')) riskNumeric = 5;
+        else if (lower.includes('high')) riskNumeric = 4;
+        else if (lower.includes('moderate')) riskNumeric = 3;
+        else if (lower.includes('low')) riskNumeric = 1;
+      }
+    } else if (typeof rawRisk === 'number') {
+      riskNumeric = rawRisk;
       if (riskNumeric > 5) riskNumeric = 5;
       if (riskNumeric < 1) riskNumeric = 1;
+      riskLabel = `Level ${riskNumeric}`;
     }
-  } else if (typeof rawRisk === 'number') {
-    riskNumeric = rawRisk;
-    if (riskNumeric > 5) riskNumeric = 5;
-    if (riskNumeric < 1) riskNumeric = 1;
   }
-  const riskLabel = typeof rawRisk === 'string' && !rawRisk.match(/\d+/) 
-    ? rawRisk 
-    : `Level ${riskNumeric}`;
+
+  // Exact same Asset Allocation mapping logic as FundDetails.jsx (Scheme Details)
+  const rawAllocations = apiFund.allocations || apiFund.asset_allocation || apiFund.portfolio || [];
+  let allocations = [];
+  if (Array.isArray(rawAllocations)) {
+    allocations = rawAllocations.map(a => ({
+      name: a.type || a.instrument || a.asset_class || a.name || 'Unknown',
+      min: a.min != null ? a.min : (a.min_allocation != null ? a.min_allocation : 0),
+      max: a.max != null ? a.max : (a.max_allocation != null ? a.max_allocation : 0),
+      value: a.value != null ? a.value : (a.max != null ? a.max : (a.max_allocation != null ? a.max_allocation : 0)),
+    })).filter(a => a.name !== 'Unknown' || a.max > 0);
+  } else if (rawAllocations && typeof rawAllocations === 'object') {
+    allocations = Object.entries(rawAllocations).map(([k, v]) => ({
+      name: k.charAt(0).toUpperCase() + k.slice(1),
+      min: Number(v) || 0,
+      max: Number(v) || 0,
+      value: Number(v) || 0,
+    })).filter(a => a.value > 0);
+  }
 
   return {
     ...apiFund,
@@ -80,8 +109,9 @@ function mapToPremiumFormat(apiFund, isBasicList = false) {
     exitLoad: apiFund.exitLoad || 'N/A',
     rating: apiFund.rating || 4,
     minSip: apiFund.minSip || 500,
-    allocation: apiFund.allocation || apiFund.portfolio || { equity: 95, debt: 0, cash: 5 },
-    portfolio: apiFund.portfolio || apiFund.allocation || { equity: 95, debt: 0, cash: 5 },
+    allocations,
+    allocation: allocations,
+    portfolio: allocations,
     sectors: apiFund.sectors || [],
     holdings: apiFund.holdings || apiFund.topHoldings || [],
     topHoldings: apiFund.topHoldings || apiFund.holdings || [],
@@ -224,15 +254,13 @@ export default function CompareFunds() {
                 {/* TODO:
                     Re-enable Top 10 Holdings once portfolio holdings
                     become available from the Frappe backend.
-                <TopHoldingsTable selectedFunds={selectedFunds} /> 
+                <TopHoldingsTable selectedFunds={selectedFunds} />
                 */}
-                
                 {/* TODO:
                     Re-enable Pros & Cons once dynamic analysis
                     is generated from actual scheme data or AI insights.
-                <ProsConsSection selectedFunds={selectedFunds} /> 
+                <ProsConsSection selectedFunds={selectedFunds} />
                 */}
-                
                 <AIRecommendation selectedFunds={selectedFunds} />
               </div>
             ) : (
