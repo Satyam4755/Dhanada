@@ -2,6 +2,8 @@ import frappe
 from typing import Dict, Any
 from .models import SyncDataset
 from .logger import log_error, log_warning
+from .comparator import compare_scheme
+from .approval import create_approval_request
 
 class DataImporter:
     def __init__(self, dry_run: bool = False):
@@ -10,7 +12,8 @@ class DataImporter:
             "created": 0,
             "updated": 0,
             "skipped": 0,
-            "errors": 0
+            "errors": 0,
+            "approvals_requested": 0
         }
 
     def import_dataset(self, dataset: SyncDataset):
@@ -18,6 +21,16 @@ class DataImporter:
         Imports the dataset idempotently.
         Follows strictly the order required for SIF DocTypes.
         """
+
+        self.dataset = dataset
+        print("AMCS:", len(dataset.amcs))
+        print("SUBCATEGORIES:", len(dataset.subcategories))
+        print("FUND MANAGERS:", len(dataset.fund_managers))
+        print("SCHEMES:", len(dataset.schemes))
+        print("PLANS:", len(dataset.scheme_plans))
+        print("NAVS:", len(dataset.nav_updates))
+        print("PERFORMANCES:", len(dataset.performances))
+
         for amc in dataset.amcs:
             self._upsert_amc(amc)
             
@@ -137,11 +150,27 @@ class DataImporter:
                     exists = temp_exists
 
             if exists:
-                if not self.dry_run:
-                    doc = frappe.get_doc("SIF Scheme", exists)
-                    self._map_scheme_fields(doc, scheme, amc_doc)
-                    doc.save(ignore_permissions=True)
-                self.stats["updated"] += 1
+                doc = frappe.get_doc("SIF Scheme", exists)
+                
+                # 1. Detect Changes
+                changes = compare_scheme(doc, scheme)
+                print("=" * 80)
+                print("SCHEME:", doc.name)
+                print("CHANGES FOUND:", len(changes))
+                print(changes)
+                print("=" * 80)
+                
+                if changes:
+                    # 2a. Delegate to Approval Service
+                    if not self.dry_run:
+                        _ = create_approval_request(doc, changes)
+                    self.stats["approvals_requested"] += 1
+                else:
+                    # 2b. Auto-Update (No editable fields changed)
+                    if not self.dry_run:
+                        self._map_scheme_fields(doc, scheme, amc_doc)
+                        doc.save(ignore_permissions=True)
+                    self.stats["updated"] += 1
             else:
                 if not self.dry_run:
                     doc = frappe.new_doc("SIF Scheme")
