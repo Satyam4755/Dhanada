@@ -19,7 +19,8 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Field Name",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "description": "Previous value from SIF Scheme",
@@ -27,7 +28,8 @@
    "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "Old Value",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "description": "Incoming value from AMFI",
@@ -35,7 +37,8 @@
    "fieldtype": "Small Text",
    "in_list_view": 1,
    "label": "New Value",
-   "read_only": 1
+   "read_only": 1,
+   "reqd": 1
   },
   {
    "default": "0",
@@ -50,7 +53,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2026-07-28 17:47:14.093542",
+ "modified": "2026-07-29 11:14:01.498554",
  "modified_by": "Administrator",
  "module": "SIF",
  "name": "SIF Scheme Approval Item",

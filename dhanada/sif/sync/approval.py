@@ -90,6 +90,8 @@ def create_approval_request(existing_doc, changes):
     return approval_doc
 
 def process_approval(approval_doc):
+
+    approval_doc.reload();
     """
     Processes an approved SIF Scheme Approval document by applying selected changes 
     to the linked SIF Scheme document.
@@ -135,12 +137,14 @@ def process_approval(approval_doc):
                 scheme_doc.set(field_name, new_value if new_value else None)
                 
     # Save the updated scheme
+    # scheme_doc.save(ignore_permissions=True)
+    scheme_doc.flags.ignore_version = True
+    
+    # Save the updated scheme
     scheme_doc.save(ignore_permissions=True)
-    
-    # Update and save the approval document
-    approval_doc.status = "Approved"
-    approval_doc.approved_by = frappe.session.user
-    approval_doc.approved_on = now_datetime()
-    approval_doc.save(ignore_permissions=True)
-    
+
+    # Only update metadata on the already-open document.
+    approval_doc.db_set("approved_by", frappe.session.user, update_modified=False)
+    approval_doc.db_set("approved_on", now_datetime(), update_modified=False)
+
     return approval_doc
