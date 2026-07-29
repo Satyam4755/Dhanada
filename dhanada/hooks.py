@@ -250,7 +250,4 @@ fixtures = [
 	"SIF Asset Management Company",
 	"SIF Fund Manager",
 	"SIF Investment Stategy Subcategory",
-	"SIF Scheme",
-	"SIF Scheme Plan",
-	"SIF Scheme Plan Performance",
 ]

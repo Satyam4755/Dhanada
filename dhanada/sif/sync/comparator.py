@@ -33,11 +33,11 @@ def compare_scheme(existing_doc, incoming_scheme: Scheme) -> list:
         
     def normalize_int(val):
         if val is None or str(val).strip() == "":
-            return None
+            return 0
         try:
             return int(float(val))
         except (ValueError, TypeError):
-            return None
+            return 0
 
     for field in EDITABLE_FIELDS:
         if field == "allocations":

@@ -8,10 +8,10 @@
  "engine": "InnoDB",
  "field_order": [
   "scheme",
-  "status",
   "approved_by",
   "approved_on",
-  "changed_fields"
+  "changed_fields",
+  "amended_from"
  ],
  "fields": [
   {
@@ -21,13 +21,6 @@
    "label": "Scheme",
    "options": "SIF Scheme",
    "reqd": 1
-  },
-  {
-   "default": "Pending",
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Pending\nApproved\nRejected"
   },
   {
    "fieldname": "approved_by",
@@ -47,12 +40,23 @@
    "fieldtype": "Table",
    "label": "Changed Fields",
    "options": "SIF Scheme Approval Item"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "SIF Scheme Approval",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-07-28 13:18:36.746422",
+ "modified": "2026-07-29 16:42:05.647844",
  "modified_by": "Administrator",
  "module": "SIF",
  "name": "SIF Scheme Approval",
@@ -69,7 +73,8 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
-   "write": 1
+   "write": 1,
+   "submit": 1
   }
  ],
  "row_format": "Dynamic",

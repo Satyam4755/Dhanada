@@ -10,16 +10,16 @@
   "field_name",
   "old_value",
   "new_value",
+  "override_value",
   "apply_change"
  ],
  "fields": [
   {
-   "description": "e.g. risk_band, exit_load",
+   "description": "Select the SIF Scheme field",
    "fieldname": "field_name",
-   "fieldtype": "Data",
+   "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Field Name",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -27,18 +27,21 @@
    "fieldname": "old_value",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Old Value",
-   "read_only": 1,
-   "reqd": 1
+   "label": "Old Value"
   },
   {
    "description": "Incoming value from AMFI",
    "fieldname": "new_value",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "New Value",
-   "read_only": 1,
-   "reqd": 1
+   "label": "New Value"
+  },
+  {
+   "description": "Optional correction to new_value",
+   "fieldname": "override_value",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Override Value"
   },
   {
    "default": "0",

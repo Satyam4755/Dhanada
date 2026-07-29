@@ -1,6 +1,6 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Navigation } from 'swiper/modules';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
@@ -10,7 +10,7 @@ import 'swiper/css/pagination';
 
 export default function CompareRelatedFunds({ selectedCategory, allFundsList = [] }) {
   // If no category is selected, just show all funds, otherwise filter by category
-  const fundsToShow = selectedCategory 
+  const fundsToShow = selectedCategory
     ? allFundsList.filter(f => f.category === selectedCategory)
     : allFundsList;
 
@@ -46,16 +46,15 @@ export default function CompareRelatedFunds({ selectedCategory, allFundsList = [
         {displayFunds.map((fund, index) => (
           <SwiperSlide key={index} className="py-2">
             <div className="bg-white rounded-3xl p-6 border border-[#e8edf7] shadow-lg shadow-blue-900/5 hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-300 group h-full flex flex-col">
-              
+
               <div className="flex justify-between items-start mb-4">
                 <span className="bg-[#eef4ff] text-[#032e92] px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
                   {fund.category}
                 </span>
-                <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${
-                  fund.risk === 'Low' ? 'bg-green-100 text-green-700' :
-                  fund.risk === 'Moderate' ? 'bg-blue-100 text-blue-700' :
-                  'bg-red-100 text-red-700'
-                }`}>
+                <span className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase ${fund.risk === 'Low' ? 'bg-green-100 text-green-700' :
+                    fund.risk === 'Moderate' ? 'bg-blue-100 text-blue-700' :
+                      'bg-red-100 text-red-700'
+                  }`}>
                   {fund.risk} Risk
                 </span>
               </div>
@@ -75,7 +74,7 @@ export default function CompareRelatedFunds({ selectedCategory, allFundsList = [
                 </div>
               </div>
 
-              <Link 
+              <Link
                 to={`/funds/${encodeURIComponent(fund.id || fund.name)}`}
                 className="w-full bg-[#f7f9fc] text-[#032e92] border border-[#e8edf7] py-2.5 rounded-xl text-sm font-bold group-hover:bg-[#032e92] group-hover:text-white transition-colors text-center block"
               >

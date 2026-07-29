@@ -13,7 +13,7 @@ def find_pending_approval(scheme_doc):
         "SIF Scheme Approval",
         filters={
             "scheme": scheme_name,
-            "status": "Pending"
+            "docstatus": 0
         },
         order_by="creation desc",
         limit=1
@@ -76,7 +76,6 @@ def create_approval_request(existing_doc, changes):
     
     approval_doc = frappe.new_doc("SIF Scheme Approval")
     approval_doc.scheme = scheme_name
-    approval_doc.status = "Pending"
     
     for change in changes:
         approval_doc.append("changed_fields", {
@@ -89,62 +88,61 @@ def create_approval_request(existing_doc, changes):
     approval_doc.insert(ignore_permissions=True)
     return approval_doc
 
-def process_approval(approval_doc):
-
-    approval_doc.reload();
+def _write_field_to_scheme(scheme_doc, field_name, raw_value):
     """
-    Processes an approved SIF Scheme Approval document by applying selected changes 
-    to the linked SIF Scheme document.
+    Writes a single field value (already serialised as a string) into the
+    SIF Scheme document, performing all necessary type coercions.
+    This is called for both the "apply" and "revert" directions.
+    """
+    if field_name == "allocations":
+        scheme_doc.set("allocations", [])
+        if raw_value:
+            for alloc in json.loads(raw_value):
+                scheme_doc.append("allocations", {
+                    "allocation_type": alloc.get("allocation_type"),
+                    "minimum_allocation_percentage": alloc.get("minimum_allocation_percentage"),
+                    "maximum_allocation_percentage": alloc.get("maximum_allocation_percentage")
+                })
+
+    elif field_name == "managers":
+        scheme_doc.set("managers", [])
+        if raw_value:
+            for m in json.loads(raw_value):
+                scheme_doc.append("managers", {
+                    "manager_name": m.get("manager_name"),
+                    "from": m.get("from_date") or None,
+                    "to": m.get("to_date") or None,
+                    "is_active": 1 if m.get("is_active") else 0
+                })
+
+    elif field_name in ["is_active", "is_active_for_subscription"]:
+        scheme_doc.set(field_name, 1 if raw_value == "True" else 0)
+
+    elif field_name == "risk_band":
+        scheme_doc.set(field_name, int(raw_value) if raw_value else None)
+
+    elif field_name == "minimum_subscription":
+        scheme_doc.set(field_name, float(raw_value) if raw_value else 0.0)
+
+    else:
+        scheme_doc.set(field_name, raw_value if raw_value else None)
+
+
+def process_approval(approval_doc):
+    """
+    Applies the selected field changes from a SIF Scheme Approval
+    document onto the linked SIF Scheme document.
+
+    Writes override_value (if present) or new_value for every row where apply_change == 1
     """
     scheme_doc = frappe.get_doc("SIF Scheme", approval_doc.scheme)
-    
+
     for item in approval_doc.get("changed_fields", []):
         if item.apply_change:
-            field_name = item.field_name
-            new_value = item.new_value
-            
-            if field_name == "allocations":
-                scheme_doc.set("allocations", [])
-                if new_value:
-                    for alloc in json.loads(new_value):
-                        scheme_doc.append("allocations", {
-                            "allocation_type": alloc.get("allocation_type"),
-                            "minimum_allocation_percentage": alloc.get("minimum_allocation_percentage"),
-                            "maximum_allocation_percentage": alloc.get("maximum_allocation_percentage")
-                        })
-                        
-            elif field_name == "managers":
-                scheme_doc.set("managers", [])
-                if new_value:
-                    for m in json.loads(new_value):
-                        scheme_doc.append("managers", {
-                            "manager_name": m.get("manager_name"),
-                            "from": m.get("from_date") or None,
-                            "to": m.get("to_date") or None,
-                            "is_active": 1 if m.get("is_active") else 0
-                        })
-                        
-            elif field_name in ["is_active", "is_active_for_subscription"]:
-                scheme_doc.set(field_name, 1 if new_value == "True" else 0)
-                
-            elif field_name == "risk_band":
-                scheme_doc.set(field_name, int(new_value) if new_value else None)
-                
-            elif field_name == "minimum_subscription":
-                scheme_doc.set(field_name, float(new_value) if new_value else 0.0)
-                
-            else:
-                scheme_doc.set(field_name, new_value if new_value else None)
-                
-    # Save the updated scheme
-    # scheme_doc.save(ignore_permissions=True)
-    scheme_doc.flags.ignore_version = True
-    
-    # Save the updated scheme
-    scheme_doc.save(ignore_permissions=True)
+            raw_value = item.override_value if getattr(item, "override_value", None) else item.new_value
+            _write_field_to_scheme(scheme_doc, item.field_name, raw_value)
 
-    # Only update metadata on the already-open document.
-    approval_doc.db_set("approved_by", frappe.session.user, update_modified=False)
-    approval_doc.db_set("approved_on", now_datetime(), update_modified=False)
+    scheme_doc.flags.ignore_version = True
+    scheme_doc.save(ignore_permissions=True)
 
     return approval_doc

@@ -292,7 +292,7 @@ class DataMapper:
                     investment_strategy=investment_strategy,
                     scheme_type=scheme_type,
                     scheme_subcategory=category_name,
-                    risk_band=self.extract_numeric_risk(raw_scheme.get("riskometer_as_on_date")),
+                    risk_band=self.extract_numeric_risk(raw_scheme.get("riskometer_as_on_date")) or self.extract_numeric_risk(raw_scheme.get("riskometer_at_launch")),
                     riskometer_at_launch=raw_scheme.get("riskometer_at_launch"),
                     potential_risk_class=raw_scheme.get("potential_risk_class"),
                     scheme_objective=raw_scheme.get("scheme_objective") or "Objective not provided",
