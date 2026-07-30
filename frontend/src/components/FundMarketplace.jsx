@@ -41,11 +41,8 @@ export default function FundMarketplace({ fundsData = [] }) {
           transition={{ duration: 0.7 }}
           className="flex flex-col md:flex-row items-start md:items-center justify-between mb-12 gap-4">
           <div>
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#eef4ff] text-[#032e92] text-sm font-semibold mb-3">
-              🛒 Investment Marketplace
-            </span>
             <h2 className="text-4xl font-bold text-gray-900">
-              Explore <span className="gradient-text">Premium Funds</span>
+              Explore <span className="gradient-text">Funds</span>
             </h2>
           </div>
           <a href="/funds" className="flex items-center gap-2 text-[#032e92] font-semibold hover:gap-3 transition-all">

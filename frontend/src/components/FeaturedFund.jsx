@@ -43,9 +43,6 @@ export default function FeaturedFund({ fund }) {
               <div>
                 {/* Badges */}
                 <div className="flex flex-wrap gap-3 mb-6">
-                  <span className="glass px-3 py-1.5 rounded-full text-xs font-semibold text-white border border-white/20">
-                    ⭐ Featured Fund of the Month
-                  </span>
                   <span className="bg-green-500/20 border border-green-400/30 px-3 py-1.5 rounded-full text-xs font-semibold text-green-300">
                     ✓ SEBI Registered
                   </span>
