@@ -1,6 +1,6 @@
 import frappe
 import json
-from frappe.utils import cstr, now_datetime
+from frappe.utils import cstr
 
 def find_pending_approval(scheme_doc):
     """
@@ -92,7 +92,6 @@ def _write_field_to_scheme(scheme_doc, field_name, raw_value):
     """
     Writes a single field value (already serialised as a string) into the
     SIF Scheme document, performing all necessary type coercions.
-    This is called for both the "apply" and "revert" directions.
     """
     if field_name == "allocations":
         scheme_doc.set("allocations", [])
