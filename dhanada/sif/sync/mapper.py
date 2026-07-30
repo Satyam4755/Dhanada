@@ -34,12 +34,16 @@ class DataMapper:
         match = re.search(r'\d+(\.\d+)?', val)
         if match:
             num = float(match.group(0))
-            if 'lakh' in val or 'lac' in val:
+            if re.search(r'\b(lakh|lakhs|lac|lacs)\b', val):
                 num *= 100000
-            elif 'cr' in val or 'crore' in val:
+            elif re.search(r'\b(cr|crore|crores)\b', val):
                 num *= 10000000
+                
+            if num > 1000000000 or num <= 0:
+                return 1000000.0
+                
             return num
-        return 0.0
+        return 1000000.0
 
     def _parse_float(self, val: Any) -> Optional[float]:
         if val is None or str(val).strip() in ("", "None", "null"):

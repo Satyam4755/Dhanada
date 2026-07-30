@@ -11,6 +11,7 @@ class DataImporter:
         self.stats = {
             "created": 0,
             "updated": 0,
+            "deleted": 0,
             "skipped": 0,
             "errors": 0,
             "approvals_requested": 0
@@ -38,6 +39,8 @@ class DataImporter:
             
         for plan in dataset.scheme_plans:
             self._upsert_scheme_plan(plan)
+            
+        self._reconcile_all_scheme_plans()
             
         for nav_update in dataset.nav_updates:
             self._update_nav(nav_update)
@@ -280,6 +283,46 @@ class DataImporter:
                 frappe.db.rollback()
             self.stats["errors"] += 1
             log_error(f"Failed to upsert Scheme Plan {plan.isin}: {e}", exc_info=True)
+
+    def _reconcile_all_scheme_plans(self):
+        """
+        Deletes SIF Scheme Plan records from the database that belong to the schemes in the current 
+        dataset but are no longer present in the dataset's scheme_plans list.
+        This cleans up old Direct plans or stale mappings.
+        """
+        if not getattr(self, "dataset", None) or not self.dataset.schemes:
+            return
+            
+        try:
+            for scheme in self.dataset.schemes:
+                # Find the parent Scheme in Frappe
+                scheme_doc = frappe.db.exists("SIF Scheme", {"sebi_code": scheme.sebi_code})
+                if not scheme_doc:
+                    continue
+                    
+                # Identify ISINs present in the incoming payload for THIS scheme
+                incoming_isins = {p.isin for p in self.dataset.scheme_plans if p.sebi_code == scheme.sebi_code}
+                
+                # Identify ISINs currently in the Frappe DB for THIS scheme
+                existing_plans = frappe.get_all("SIF Scheme Plan", filters={"scheme": scheme_doc}, pluck="isin")
+                
+                stale_isins = set(existing_plans) - incoming_isins
+                
+                for stale_isin in stale_isins:
+                    if not self.dry_run:
+                        # Deleting a Scheme Plan might have side effects on Performance
+                        # Frappe handles referential integrity natively if configured, 
+                        # but we force delete it to ensure cleanup.
+                        frappe.delete_doc("SIF Scheme Plan", stale_isin, force=1, ignore_permissions=True)
+                    self.stats["deleted"] += 1
+            
+            if not self.dry_run:
+                frappe.db.commit()
+        except Exception as e:
+            if not self.dry_run:
+                frappe.db.rollback()
+            self.stats["errors"] += 1
+            log_error(f"Failed to reconcile Scheme Plans: {e}", exc_info=True)
 
     def _update_nav(self, nav_update):
         try:
