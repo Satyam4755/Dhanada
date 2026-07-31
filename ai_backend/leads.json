@@ -1,0 +1,37 @@
+{
+  "9119876543": {
+    "name": "satyam raj",
+    "email": "satyam@gmail.com",
+    "createdAt": "2026-07-30T11:18:01.796Z",
+    "status": "New",
+    "source": "Website Chatbot",
+    "interest": "sip",
+    "notes": [
+      "Lead started from chatbot conversation",
+      "Lead completed from chatbot conversation"
+    ],
+    "updatedAt": "2026-07-30T11:39:57.901Z"
+  },
+  "9119823456": {
+    "name": "Ananya Singh",
+    "email": null,
+    "createdAt": "2026-07-30T11:58:17.439Z",
+    "status": "New",
+    "source": "Website Chatbot",
+    "interest": "sip",
+    "notes": [
+      "Lead completed from chatbot conversation"
+    ]
+  },
+  "9119869109": {
+    "name": "Vikas",
+    "email": null,
+    "createdAt": "2026-07-31T10:52:59.382Z",
+    "status": "New",
+    "source": "Website Chatbot",
+    "interest": "sif",
+    "notes": [
+      "Lead completed from chatbot conversation"
+    ]
+  }
+}

@@ -9,9 +9,11 @@ import LumpsumCalculator from './pages/LumpsumCalculator'
 import StepUpSipCalculator from './pages/StepUpSipCalculator'
 import RetirementCalculator from './pages/RetirementCalculator'
 import ScrollToTop from './components/ScrollToTop'
+import ChatbotWidget from './chatbot/components/ChatbotWidget'
 import './index.css'
 
 function App() {
+  console.log("App Rendered");
   return (
     <BrowserRouter>
       <ScrollToTop />
@@ -26,6 +28,7 @@ function App() {
         <Route path="/calculators/step-up-sip" element={<StepUpSipCalculator />} />
         <Route path="/calculators/retirement" element={<RetirementCalculator />} />
       </Routes>
+      <ChatbotWidget />
     </BrowserRouter>
   )
 }

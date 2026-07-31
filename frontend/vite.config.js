@@ -9,6 +9,18 @@ export default defineConfig({
   ],
   server: {
     proxy: {
+      '/api/chat': {
+        target: 'http://127.0.0.1:3405',
+        changeOrigin: true
+      },
+      '/api/leads': {
+        target: 'http://127.0.0.1:3405',
+        changeOrigin: true
+      },
+      '/api/health': {
+        target: 'http://127.0.0.1:3405',
+        changeOrigin: true
+      },
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true
