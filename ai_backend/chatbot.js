@@ -2,6 +2,16 @@
 
 const knowledgeService = require('./knowledgeService');
 const leadManager = require('./leadManager');
+const { GoogleGenAI } = require('@google/genai');
+
+let aiClient = null;
+try {
+  if (process.env.GEMINI_API_KEY) {
+    aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  }
+} catch (error) {
+  console.warn("Failed to initialize Gemini Client:", error);
+}
 
 const LEAD_STEPS = {
   NONE: 'none',
@@ -332,6 +342,10 @@ class Chatbot {
   async handleIntent(state, message) {
     const intent = this.detectIntent(message);
 
+    if (intent !== 'unknown') {
+      console.log(`[LOCAL] Responding to intent: ${intent}`);
+    }
+
     switch (intent) {
       case 'greeting':
         return 'Hi! I am Dhanada, your investment assistant. How can I help you today?';
@@ -435,7 +449,7 @@ class Chatbot {
         return this.startLeadFlow(state, 'I can arrange that. ');
 
       default:
-        return this.handleUnknown(state);
+        return await this.handleUnknown(state, message);
     }
   }
 
@@ -594,12 +608,56 @@ class Chatbot {
     return this.answerAndMaybeOffer(state, formatRecommendation(result, profile), true);
   }
 
-  handleUnknown(state) {
+  async handleUnknown(state, message) {
     if (state.currentTopic === 'recommendation') {
       return 'Please share your risk level and horizon so I can make a good suggestion 😊';
     }
 
-    return 'I can help with SIP, mutual funds, risk, tax, and more. What would you like to know?';
+    const localFallback = 'I can help with SIP, mutual funds, risk, tax, and more. What would you like to know?';
+
+    if (!aiClient) {
+      console.log('[FALLBACK] Gemini client not initialized.');
+      return localFallback;
+    }
+
+    try {
+      const systemInstruction = `You are Dhanada, a friendly, professional investment assistant for Dhanada Specialized Investment Fund.
+Answer questions about Mutual Funds, SIP, NAV, Tax, Risk, Asset Allocation, Retirement, Investing, Wealth Creation, Financial Planning, and General Finance.
+Keep answers short, friendly, professional, and easy to understand.
+NEVER mention AI, Gemini, or that you are a large language model.
+If the user asks something completely unrelated to finance, politely steer them back.`;
+
+      const contents = state.history.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      }));
+
+      const requestTimeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Gemini API timeout')), 10000)
+      );
+
+      const apiCall = aiClient.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents,
+        config: {
+          systemInstruction: { parts: [{ text: systemInstruction }] },
+          temperature: 0.3,
+        }
+      });
+
+      const response = await Promise.race([apiCall, requestTimeout]);
+
+      if (response && response.text && response.text.trim().length > 0) {
+        console.log('[GEMINI] Answered successfully.');
+        return this.answerAndMaybeOffer(state, response.text.trim(), true);
+      } else {
+        console.log('[FALLBACK] Gemini returned empty response.');
+        return localFallback;
+      }
+    } catch (error) {
+      console.log('[FALLBACK] Gemini failed:', error.message);
+      return "I'm unable to fetch that information right now. Please try again in a moment.";
+    }
   }
 
   startLeadFlow(state, prefix = '') {
