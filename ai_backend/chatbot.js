@@ -134,7 +134,7 @@ function formatRecommendation(result, profile) {
 function chooseOffer(state) {
   return {
     id: 'advisor_connect',
-    prompt: "😊 Good news! An advisor is available.\n\nWould you like me to connect you with them for personalized guidance?",
+    prompt: "Hey wait a minute😯! An advisor is available.\n\nWould you like me to connect you with them for personalized guidance?",
   };
 }
 
@@ -212,7 +212,7 @@ class Chatbot {
 
   async processMessage(sessionId, message) {
     const previousTask = this.sessionQueue.get(sessionId) || Promise.resolve();
-    const currentTask = previousTask.catch(() => {}).then(() => this.processMessageInternal(sessionId, message));
+    const currentTask = previousTask.catch(() => { }).then(() => this.processMessageInternal(sessionId, message));
 
     this.sessionQueue.set(sessionId, currentTask);
 
@@ -670,6 +670,7 @@ class Chatbot {
   }
 
   async saveCompletedLead(state) {
+    console.log("Received lead:", state.collected);
     const saveResult = await leadManager.saveLead({
       phone: state.collected.phone,
       name: state.collected.name,

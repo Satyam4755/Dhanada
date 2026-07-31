@@ -127,6 +127,7 @@ class JSONFileLeadRepository extends LeadRepository {
   }
 
   async writeAll(leads) {
+    console.log("Writing leads.json:", Object.keys(leads).length, "leads");
     const tempFile = `${this.filePath}.tmp`;
     await fs.writeFile(tempFile, JSON.stringify(leads, null, 2), 'utf-8');
     await fs.rename(tempFile, this.filePath);
@@ -176,6 +177,7 @@ class JSONFileLeadRepository extends LeadRepository {
 const repository = new JSONFileLeadRepository();
 
 async function saveLead({ phone, name, email, source, interest, notes }) {
+  console.log("Saving lead:", { phone, name, email, source, interest, notes });
   let primaryKey = null;
 
   if (phone) {
@@ -218,6 +220,8 @@ async function saveLead({ phone, name, email, source, interest, notes }) {
       interest,
       notes,
     });
+    
+    console.log("Lead saved successfully.", primaryKey);
 
     return {
       success: true,

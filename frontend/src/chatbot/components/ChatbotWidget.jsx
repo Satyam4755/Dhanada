@@ -85,9 +85,9 @@ export default function ChatbotWidget() {
       });
   }, []);
 
-  const pushMessage = (role, text) => {
+  const pushMessage = (role, text, quickReplies = []) => {
     setMessages((prev) => {
-      const updated = [...prev, { role, text }];
+      const updated = [...prev, { role, text, quickReplies }];
       localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(updated));
       return updated;
     });
@@ -126,7 +126,7 @@ export default function ChatbotWidget() {
       }
 
       const data = await response.json();
-      pushMessage('bot', data.reply);
+      pushMessage('bot', data.reply, data.quickReplies);
       updateStateAndSuggestions(data.state, data.quickReplies);
     } catch (error) {
       console.error(error);
@@ -251,6 +251,21 @@ export default function ChatbotWidget() {
                   </div>
                 )}
                 <div>{msg.text}</div>
+                {msg.quickReplies && msg.quickReplies.length > 0 && (
+                  <div className="quick-replies-container">
+                    {msg.quickReplies.map((qr, qrIdx) => (
+                      <button 
+                        key={qrIdx} 
+                        type="button"
+                        className="quick-reply-btn" 
+                        onClick={() => handleSend(qr)}
+                        disabled={isBusy}
+                      >
+                        {qr}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div >
           ))

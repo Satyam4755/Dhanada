@@ -10,7 +10,7 @@
       "Lead started from chatbot conversation",
       "Lead completed from chatbot conversation"
     ],
-    "updatedAt": "2026-07-30T11:39:57.901Z"
+    "updatedAt": "2026-07-31T10:58:54.768Z"
   },
   "9119823456": {
     "name": "Ananya Singh",
@@ -30,6 +30,17 @@
     "status": "New",
     "source": "Website Chatbot",
     "interest": "sif",
+    "notes": [
+      "Lead completed from chatbot conversation"
+    ]
+  },
+  "9119876547": {
+    "name": "Nitin",
+    "email": null,
+    "createdAt": "2026-07-31T11:10:17.447Z",
+    "status": "New",
+    "source": "Website Chatbot",
+    "interest": "comparison",
     "notes": [
       "Lead completed from chatbot conversation"
     ]
