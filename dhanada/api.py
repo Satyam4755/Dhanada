@@ -245,3 +245,30 @@ def get_fund_details(identifier):
     except Exception as e:
         frappe.log_error(title="get_fund_details API Error", message=frappe.get_traceback())
         return {"status": "error", "message": str(e)}
+
+@frappe.whitelist(allow_guest=True)
+def create_chatbot_lead():
+    try:
+        first_name = frappe.form_dict.get("name", "Unknown")
+        last_name = ""
+        
+        if " " in first_name and first_name != "Unknown":
+            parts = first_name.split(" ", 1)
+            first_name = parts[0]
+            last_name = parts[1]
+            
+        lead = frappe.get_doc({
+            "doctype": "CRM Lead",
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": frappe.form_dict.get("email"),
+            "mobile_no": frappe.form_dict.get("mobile"),
+            "interest": frappe.form_dict.get("interest"),
+            "source": frappe.form_dict.get("source", "Website Chatbot")
+        })
+        lead.insert(ignore_permissions=True)
+        frappe.db.commit()
+        return {"success": True, "lead_name": lead.name}
+    except Exception as e:
+        frappe.log_error(message=frappe.get_traceback(), title="Chatbot Lead Creation Failed")
+        frappe.throw(f"Failed to create Lead: {str(e)}")

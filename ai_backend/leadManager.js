@@ -1,10 +1,5 @@
 'use strict';
 
-const fs = require('fs').promises;
-const path = require('path');
-
-const LEADS_FILE_PATH = path.join(__dirname, 'leads.json');
-
 const ValidationRules = {
   phone: /^[6-9]\d{9}$/,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
@@ -48,11 +43,11 @@ function validatePhone(rawPhone) {
 function validateEmail(rawEmail) {
   const email = String(rawEmail || '').trim().toLowerCase();
 
-  if (!ValidationRules.email.test(email)) {
+  if (!email || !ValidationRules.email.test(email)) {
     return {
       valid: false,
       value: null,
-      message: 'Please share a valid email address.',
+      message: 'Please provide a valid email address.',
     };
   }
 
@@ -66,11 +61,27 @@ function validateEmail(rawEmail) {
 function validateName(rawName) {
   const name = String(rawName || '').trim();
 
+  if (!name || name.length < 2) {
+    return {
+      valid: false,
+      value: null,
+      message: 'Name is too short. Please provide a valid name.',
+    };
+  }
+
+  if (name.length > 50) {
+    return {
+      valid: false,
+      value: null,
+      message: 'Name is too long. Please provide a valid name.',
+    };
+  }
+
   if (!ValidationRules.name.test(name)) {
     return {
       valid: false,
       value: null,
-      message: 'Please share your name using letters only, for example Rahul Sharma.',
+      message: 'Please provide a valid name using letters and spaces.',
     };
   }
 
@@ -81,103 +92,7 @@ function validateName(rawName) {
   };
 }
 
-class LeadRepository {
-  async getAll() {
-    throw new Error('Not implemented');
-  }
-
-  async getByPhone(phone) {
-    throw new Error('Not implemented');
-  }
-
-  async upsert(phone, leadData) {
-    throw new Error('Not implemented');
-  }
-}
-
-class JSONFileLeadRepository extends LeadRepository {
-  constructor(filePath = LEADS_FILE_PATH) {
-    super();
-    this.filePath = filePath;
-    this.writeQueue = Promise.resolve();
-  }
-
-  async ensureFileExists() {
-    try {
-      await fs.access(this.filePath);
-    } catch {
-      await fs.writeFile(this.filePath, JSON.stringify({}, null, 2), 'utf-8');
-    }
-  }
-
-  async getAll() {
-    await this.ensureFileExists();
-
-    try {
-      const raw = await fs.readFile(this.filePath, 'utf-8');
-      return raw.trim() ? JSON.parse(raw) : {};
-    } catch (error) {
-      throw new Error(`Could not read leads.json: ${error.message}`);
-    }
-  }
-
-  async getByPhone(phone) {
-    const leads = await this.getAll();
-    return leads[phone] || null;
-  }
-
-  async writeAll(leads) {
-    console.log("Writing leads.json:", Object.keys(leads).length, "leads");
-    const tempFile = `${this.filePath}.tmp`;
-    await fs.writeFile(tempFile, JSON.stringify(leads, null, 2), 'utf-8');
-    await fs.rename(tempFile, this.filePath);
-  }
-
-  async upsert(phone, leadData) {
-    const task = async () => {
-      const leads = await this.getAll();
-      const existing = leads[phone];
-      const incomingNotes = Array.isArray(leadData.notes) ? leadData.notes.filter(Boolean) : [];
-
-      if (existing) {
-        const mergedNotes = [...new Set([...(existing.notes || []), ...incomingNotes])];
-
-        leads[phone] = {
-          ...existing,
-          name: existing.name || leadData.name || null,
-          email: existing.email || leadData.email || null,
-          interest: existing.interest || leadData.interest || null,
-          notes: mergedNotes,
-          source: existing.source || leadData.source || 'Website Chatbot',
-          status: existing.status || leadData.status || 'New',
-          updatedAt: new Date().toISOString(),
-        };
-      } else {
-        leads[phone] = {
-          name: leadData.name || null,
-          email: leadData.email || null,
-          createdAt: new Date().toISOString(),
-          status: leadData.status || 'New',
-          source: leadData.source || 'Website Chatbot',
-          interest: leadData.interest || null,
-          notes: incomingNotes,
-        };
-      }
-
-      await this.writeAll(leads);
-      return leads[phone];
-    };
-
-    const promise = this.writeQueue.catch(() => {}).then(task);
-    this.writeQueue = promise.catch(() => {});
-    return promise;
-  }
-}
-
-const repository = new JSONFileLeadRepository();
-
 async function saveLead({ phone, name, email, source, interest, notes }) {
-  console.log("Saving lead:", { phone, name, email, source, interest, notes });
   let primaryKey = null;
 
   if (phone) {
@@ -186,12 +101,14 @@ async function saveLead({ phone, name, email, source, interest, notes }) {
       return { success: false, message: phoneCheck.message };
     }
     primaryKey = phoneCheck.value;
+    phone = phoneCheck.value;
   } else if (email) {
     const emailCheck = validateEmail(email);
     if (!emailCheck.valid) {
       return { success: false, message: emailCheck.message };
     }
     primaryKey = emailCheck.value;
+    email = emailCheck.value;
   } else {
     return { success: false, message: 'Phone or email is required.' };
   }
@@ -213,24 +130,50 @@ async function saveLead({ phone, name, email, source, interest, notes }) {
   }
 
   try {
-    const lead = await repository.upsert(primaryKey, {
-      name,
-      email,
-      source,
-      interest,
-      notes,
-    });
-    
-    console.log("Lead saved successfully.", primaryKey);
-
-    return {
-      success: true,
-      phone: phone ? primaryKey : null,
-      email: email ? email : null,
-      lead,
+    const payload = {
+      name: name || '',
+      email: email || '',
+      mobile: phone || '',
+      interest: interest || '',
+      source: source || 'Website Chatbot'
     };
+    console.log("[STEP 3] Sending payload to Frappe");
+    console.log(payload);
+
+    const response = await fetch('http://127.0.0.1:8000/api/method/dhanada.api.create_chatbot_lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    console.log("[STEP 4] Frappe response");
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log(errorText);
+      throw new Error(`CRM API returned ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log(data);
+    
+    if (data.message && data.message.success) {
+      console.log(`[STEP 5] CRM Lead Created`);
+      console.log(`[CRM] Lead Created: ${data.message.lead_name}`);
+      return {
+        success: true,
+        phone: phone ? primaryKey : null,
+        email: email ? email : null,
+        lead_name: data.message.lead_name,
+      };
+    } else {
+      throw new Error(data._server_messages || "Unknown CRM API error");
+    }
+
   } catch (error) {
-    console.error('Failed to save lead:', error);
+    console.error('[CRM] Failed to save lead:', error.message);
     return {
       success: false,
       message: `Could not save lead: ${error.message}`,
@@ -238,58 +181,10 @@ async function saveLead({ phone, name, email, source, interest, notes }) {
   }
 }
 
-async function updateLead(phone, updates) {
-  const phoneCheck = validatePhone(phone);
-
-  if (!phoneCheck.valid) {
-    return {
-      success: false,
-      message: phoneCheck.message,
-    };
-  }
-
-  try {
-    const existing = await repository.getByPhone(phoneCheck.value);
-
-    if (!existing) {
-      return {
-        success: false,
-        message: 'Lead not found.',
-      };
-    }
-
-    const lead = await repository.upsert(phoneCheck.value, updates);
-    return {
-      success: true,
-      lead,
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: `Could not update lead: ${error.message}`,
-    };
-  }
-}
-
-async function getLead(phone) {
-  const phoneCheck = validatePhone(phone);
-  if (!phoneCheck.valid) return null;
-  return repository.getByPhone(phoneCheck.value);
-}
-
-async function getAllLeads() {
-  return repository.getAll();
-}
-
 module.exports = {
   saveLead,
-  updateLead,
-  getLead,
-  getAllLeads,
   validatePhone,
   validateEmail,
   validateName,
   normalizePhone,
-  JSONFileLeadRepository,
-  LeadRepository,
 };

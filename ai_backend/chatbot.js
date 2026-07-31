@@ -728,15 +728,17 @@ If the user asks something completely unrelated to finance, politely steer them 
   }
 
   async saveCompletedLead(state) {
-    console.log("Received lead:", state.collected);
-    const saveResult = await leadManager.saveLead({
+    console.log("[STEP 1] Lead flow completed");
+    console.log("[STEP 2] saveLead() called");
+    const payload = {
       phone: state.collected.phone,
       name: state.collected.name,
       email: state.collected.email,
       source: 'Website Chatbot',
       interest: state.currentTopic,
       notes: ['Lead completed from chatbot conversation'],
-    });
+    };
+    const saveResult = await leadManager.saveLead(payload);
 
     if (!saveResult.success) {
       console.error('Lead saving failed:', saveResult.message);
