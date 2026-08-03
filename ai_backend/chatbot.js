@@ -357,9 +357,6 @@ class Chatbot {
       }
     }
 
-    if (state.crmLeadName && !['greeting', 'thanks', 'affirmative', 'negative'].includes(intent)) {
-      this.updateOngoingLead(state).catch(console.error);
-    }
 
     state.history.push({
       role: 'bot',
@@ -972,42 +969,11 @@ ${historyText}`;
     return chatSummary;
   }
 
-  async updateOngoingLead(state) {
-    try {
-      const chatSummary = await this.generateChatSummary(state);
-      await leadManager.updateLead({
-        lead_name: state.crmLeadName,
-        interest: state.currentTopic,
-        chat_summary: chatSummary
-      });
-    } catch (e) {
-      console.error("[CRM] Error during background update:", e);
-    }
-  }
-
   async saveCompletedLead(state) {
     console.log("[STEP 1] Lead flow completed");
     console.log("[STEP 2] saveCompletedLead() called");
 
     const chatSummary = await this.generateChatSummary(state);
-
-    if (state.crmLeadName) {
-      // If we already have a lead, update it instead of creating a new one
-      await leadManager.updateLead({
-        lead_name: state.crmLeadName,
-        interest: state.currentTopic,
-        chat_summary: chatSummary,
-        email: state.collected.email,
-        phone: state.collected.phone
-      });
-      state.leadStep = LEAD_STEPS.DONE;
-      state.leadCaptured = true;
-      return `Awesome! 😊
-
-I've updated your contact details. Our advisor will connect with you shortly.
-
-Meanwhile, I'm always here if you have more questions.`;
-    }
 
     const payload = {
       phone: state.collected.phone,
@@ -1026,7 +992,6 @@ Meanwhile, I'm always here if you have more questions.`;
       return 'Oops! Something went wrong saving your contact info. Please try again.';
     }
 
-    state.crmLeadName = saveResult.lead_name;
     state.leadStep = LEAD_STEPS.DONE;
     state.leadCaptured = true;
 
