@@ -87,7 +87,8 @@ export default function ChatbotWidget() {
 
   const pushMessage = (role, text, quickReplies = []) => {
     setMessages((prev) => {
-      const updated = [...prev, { role, text, quickReplies }];
+      const clearedPrev = prev.map(msg => ({ ...msg, quickReplies: [] }));
+      const updated = [...clearedPrev, { role, text, quickReplies }];
       localStorage.setItem(STORAGE_KEYS.history, JSON.stringify(updated));
       return updated;
     });

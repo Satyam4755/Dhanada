@@ -278,3 +278,34 @@ def create_chatbot_lead():
     except Exception as e:
         frappe.log_error(message=frappe.get_traceback(), title="Chatbot Lead Creation Failed")
         frappe.throw(f"Failed to create Lead: {str(e)}")
+
+@frappe.whitelist(allow_guest=True)
+def update_chatbot_lead():
+    try:
+        lead_name = frappe.form_dict.get("lead_name")
+        if not lead_name:
+            frappe.throw("Lead name is required for update")
+            
+        lead = frappe.get_doc("CRM Lead", lead_name)
+        
+        chat_summary_value = frappe.form_dict.get("chat_summary")
+        interest = frappe.form_dict.get("interest")
+        email = frappe.form_dict.get("email")
+        mobile = frappe.form_dict.get("mobile_no")
+        
+        if chat_summary_value:
+            lead.chat_summary = chat_summary_value
+        if interest:
+            lead.interest = interest
+        if email:
+            lead.email = email
+        if mobile:
+            lead.mobile_no = mobile
+            
+        lead.save(ignore_permissions=True)
+        frappe.db.commit()
+        
+        return {"success": True, "lead_name": lead.name}
+    except Exception as e:
+        frappe.log_error(message=frappe.get_traceback(), title="Chatbot Lead Update Failed")
+        frappe.throw(f"Failed to update Lead: {str(e)}")

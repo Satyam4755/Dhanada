@@ -182,8 +182,52 @@ async function saveLead({ phone, name, email, source, interest, chat_summary, no
   }
 }
 
+async function updateLead({ lead_name, interest, chat_summary, email, phone }) {
+  try {
+    const payload = {
+      lead_name,
+      interest: interest || '',
+      chat_summary: chat_summary || ''
+    };
+    if (email) payload.email = email;
+    if (phone) payload.mobile_no = phone;
+    console.log(`[STEP X] Updating lead ${lead_name} in Frappe`);
+    
+    const response = await fetch('http://127.0.0.1:8000/api/method/dhanada.api.update_chatbot_lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log(errorText);
+      throw new Error(`CRM API returned ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.message && data.message.success) {
+      console.log(`[CRM] Lead Updated: ${data.message.lead_name}`);
+      return { success: true, lead_name: data.message.lead_name };
+    } else {
+      throw new Error(data._server_messages || "Unknown CRM API error");
+    }
+
+  } catch (error) {
+    console.error('[CRM] Failed to update lead:', error.message);
+    return {
+      success: false,
+      message: `Could not update lead: ${error.message}`,
+    };
+  }
+}
+
 module.exports = {
   saveLead,
+  updateLead,
   validatePhone,
   validateEmail,
   validateName,
