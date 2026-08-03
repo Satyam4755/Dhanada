@@ -730,12 +730,57 @@ If the user asks something completely unrelated to finance, politely steer them 
   async saveCompletedLead(state) {
     console.log("[STEP 1] Lead flow completed");
     console.log("[STEP 2] saveLead() called");
+    
+    let chatSummary = "Customer interacted with the investment chatbot.";
+    
+    if (aiClient && state.history && state.history.length > 0) {
+      try {
+        console.log("[SUMMARY] Generating CRM summary...");
+        const historyText = state.history.map(h => `${h.role}: ${h.text}`).join('\n');
+        const prompt = `Generate an internal CRM lead summary based on the following conversation history.
+
+Rules:
+* Maximum 1–2 short sentences.
+* Maximum 180 characters if possible.
+* Mention:
+    * what the user wants
+    * investment goal if known
+    * fund/SIP/tax/NAV topic if discussed
+    * whether advisor callback is expected
+* Do NOT greet.
+* Do NOT invent information.
+* Do NOT mention AI.
+* Output plain text only.
+
+Conversation History:
+${historyText}`;
+
+        const apiCall = aiClient.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+        });
+        
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Gemini timeout')), 5000));
+        const response = await Promise.race([apiCall, timeout]);
+        
+        if (response && response.text && response.text.trim().length > 0) {
+          chatSummary = response.text.trim();
+          console.log(`[SUMMARY] ${chatSummary}`);
+        } else {
+          console.log("[SUMMARY] Failed to generate summary: Empty response.");
+        }
+      } catch (error) {
+        console.log(`[SUMMARY] Failed to generate summary: ${error.message}`);
+      }
+    }
+
     const payload = {
       phone: state.collected.phone,
       name: state.collected.name,
       email: state.collected.email,
       source: 'Website Chatbot',
       interest: state.currentTopic,
+      chat_summary: chatSummary,
       notes: ['Lead completed from chatbot conversation'],
     };
     const saveResult = await leadManager.saveLead(payload);

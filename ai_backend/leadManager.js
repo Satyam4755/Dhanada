@@ -92,7 +92,7 @@ function validateName(rawName) {
   };
 }
 
-async function saveLead({ phone, name, email, source, interest, notes }) {
+async function saveLead({ phone, name, email, source, interest, chat_summary, notes }) {
   let primaryKey = null;
 
   if (phone) {
@@ -135,6 +135,7 @@ async function saveLead({ phone, name, email, source, interest, notes }) {
       email: email || '',
       mobile: phone || '',
       interest: interest || '',
+      chat_summary: chat_summary || '',
       source: source || 'Website Chatbot'
     };
     console.log("[STEP 3] Sending payload to Frappe");

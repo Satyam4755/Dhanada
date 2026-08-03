@@ -249,6 +249,8 @@ def get_fund_details(identifier):
 @frappe.whitelist(allow_guest=True)
 def create_chatbot_lead():
     try:
+        chat_summary_value = frappe.form_dict.get("chat_summary")
+        
         first_name = frappe.form_dict.get("name", "Unknown")
         last_name = ""
         
@@ -257,17 +259,21 @@ def create_chatbot_lead():
             first_name = parts[0]
             last_name = parts[1]
             
-        lead = frappe.get_doc({
+        doc_data = {
             "doctype": "CRM Lead",
             "first_name": first_name,
             "last_name": last_name,
             "email": frappe.form_dict.get("email"),
             "mobile_no": frappe.form_dict.get("mobile"),
             "interest": frappe.form_dict.get("interest"),
+            "chat_summary": chat_summary_value,
             "source": frappe.form_dict.get("source", "Website Chatbot")
-        })
+        }
+        
+        lead = frappe.get_doc(doc_data)
         lead.insert(ignore_permissions=True)
         frappe.db.commit()
+        
         return {"success": True, "lead_name": lead.name}
     except Exception as e:
         frappe.log_error(message=frappe.get_traceback(), title="Chatbot Lead Creation Failed")
