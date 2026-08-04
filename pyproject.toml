@@ -4,7 +4,7 @@ authors = [
     { name = "KNAPS Private Limited", email = "piyush.sawhney@knaps.in"}
 ]
 description = "Investment Platform for KNAPS "
-requires-python = ">=3.14"
+requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
 dependencies = [

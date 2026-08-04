@@ -5,10 +5,13 @@ APP_NAME=$1
 
 echo "Checking if ${APP_NAME} is installed on bench..."
 if ! grep -q "^${APP_NAME}$" sites/apps.txt; then
-    if [ "$APP_NAME" = "dhanada" ]; then
-        # Dhanada is mounted at apps/dhanada
-        echo "Installing mounted ${APP_NAME}..."
-        bench get-app ${APP_NAME} --resolve-deps
+    if [ -d "apps/${APP_NAME}" ]; then
+        echo "Registering locally mounted ${APP_NAME}..."
+        bench pip install -e apps/${APP_NAME}
+        # Prevent duplicates
+        if ! grep -q "^${APP_NAME}$" sites/apps.txt; then
+            echo "${APP_NAME}" >> sites/apps.txt
+        fi
     else
         echo "Fetching ${APP_NAME}..."
         bench get-app ${APP_NAME}
