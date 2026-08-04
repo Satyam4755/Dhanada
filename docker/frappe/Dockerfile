@@ -1,5 +1,5 @@
 ARG FRAPPE_VERSION=v15
-FROM frappe/frappe-worker:${FRAPPE_VERSION}
+FROM frappe/erpnext:${FRAPPE_VERSION}
 
 USER root
 # Ensure proper permissions and install any required OS dependencies

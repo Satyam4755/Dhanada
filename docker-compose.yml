@@ -111,9 +111,9 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - sites-vol:/usr/share/nginx/html/sites
-      - assets-vol:/usr/share/nginx/html/assets
-      - ./dhanada:/usr/share/nginx/html/apps/dhanada
+      - sites-vol:/home/frappe/frappe-bench/sites
+      - assets-vol:/home/frappe/frappe-bench/sites/assets
+      - ./dhanada:/home/frappe/frappe-bench/apps/dhanada
     restart: unless-stopped
     depends_on:
       - backend

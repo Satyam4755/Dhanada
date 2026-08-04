@@ -1,6 +1,8 @@
 ARG FRAPPE_VERSION=v15
-FROM frappe/frappe-nginx:${FRAPPE_VERSION}
+FROM frappe/erpnext:${FRAPPE_VERSION}
 
-# Use default frappe-nginx configuration.
-# If additional proxying rules are needed (e.g. for AI backend), they can be added here.
-COPY docker/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# The official frappe/erpnext image (v15+) is a unified image that also contains Nginx.
+# It uses nginx-entrypoint.sh to handle proxying and static asset serving.
+# We will leverage the built-in default templates.
+
+CMD ["nginx-entrypoint.sh"]
