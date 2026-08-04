@@ -53,3 +53,11 @@ jspm_packages/
 
 # Aider AI Chat
 .aider*
+
+# Docker & Frappe generated files
+frappe-bench/
+sites/
+logs/
+assets/
+node_modules/
+.env

@@ -1,0 +1,223 @@
+name: dhanada
+
+services:
+  # ==========================================
+  # Core Infrastructure
+  # ==========================================
+  mariadb:
+    image: mariadb:10.6
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+
+  redis-cache:
+    image: redis:6.2-alpine
+    volumes:
+      - redis-cache-data:/data
+    restart: unless-stopped
+
+  redis-queue:
+    image: redis:6.2-alpine
+    volumes:
+      - redis-queue-data:/data
+    restart: unless-stopped
+
+  redis-socketio:
+    image: redis:6.2-alpine
+    volumes:
+      - redis-socketio-data:/data
+    restart: unless-stopped
+
+  # ==========================================
+  # Frappe Services
+  # ==========================================
+  configurator:
+    build:
+      context: .
+      dockerfile: docker/frappe/Dockerfile
+      args:
+        FRAPPE_VERSION: v15
+    command:
+      - bash
+      - -c
+      - >
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host $$DB_HOST;
+        bench set-config -gp db_port $$DB_PORT;
+        bench set-config -g redis_cache "redis://$$REDIS_CACHE";
+        bench set-config -g redis_queue "redis://$$REDIS_QUEUE";
+        bench set-config -g redis_socketio "redis://$$REDIS_SOCKETIO";
+        bench set-config -gp socketio_port $$SOCKETIO_PORT;
+        /docker/scripts/init-site.sh
+    environment:
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      REDIS_SOCKETIO: redis-socketio:6379
+      SOCKETIO_PORT: "9000"
+      DB_ROOT_USER: root
+      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      SITE_NAME: ${SITE_NAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    volumes:
+      - sites-vol:/home/frappe/frappe-bench/sites
+      - ./docker/scripts:/docker/scripts
+      # Mount the local app for development
+      - ./dhanada:/home/frappe/frappe-bench/apps/dhanada
+    depends_on:
+      - mariadb
+      - redis-cache
+      - redis-queue
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/frappe/Dockerfile
+      args:
+        FRAPPE_VERSION: v15
+    volumes:
+      - sites-vol:/home/frappe/frappe-bench/sites
+      - assets-vol:/home/frappe/frappe-bench/sites/assets
+      - ./dhanada:/home/frappe/frappe-bench/apps/dhanada
+    restart: unless-stopped
+    depends_on:
+      - configurator
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      args:
+        FRAPPE_VERSION: v15
+    environment:
+      BACKEND: backend:8000
+      FRAPPE_SITE_NAME_HEADER: ${SITE_NAME}
+      SOCKETIO: websocket:9000
+      UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
+      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
+      UPSTREAM_REAL_IP_RECURSIVE: "off"
+      PROXY_READ_TIMEOUT: 120
+      CLIENT_MAX_BODY_SIZE: 50m
+    ports:
+      - "8080:8080"
+    volumes:
+      - sites-vol:/usr/share/nginx/html/sites
+      - assets-vol:/usr/share/nginx/html/assets
+      - ./dhanada:/usr/share/nginx/html/apps/dhanada
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  websocket:
+    build:
+      context: .
+      dockerfile: docker/frappe/Dockerfile
+      args:
+        FRAPPE_VERSION: v15
+    command:
+      - node
+      - /home/frappe/frappe-bench/apps/frappe/socketio.js
+    volumes:
+      - sites-vol:/home/frappe/frappe-bench/sites
+      - ./dhanada:/home/frappe/frappe-bench/apps/dhanada
+    restart: unless-stopped
+    depends_on:
+      - configurator
+      - redis-socketio
+
+  queue-short:
+    build:
+      context: .
+      dockerfile: docker/frappe/Dockerfile
+      args:
+        FRAPPE_VERSION: v15
+    command:
+      - bench
+      - worker
+      - --queue
+      - short,default
+    volumes:
+      - sites-vol:/home/frappe/frappe-bench/sites
+      - ./dhanada:/home/frappe/frappe-bench/apps/dhanada
+    restart: unless-stopped
+    depends_on:
+      - configurator
+
+  queue-long:
+    build:
+      context: .
+      dockerfile: docker/frappe/Dockerfile
+      args:
+        FRAPPE_VERSION: v15
+    command:
+      - bench
+      - worker
+      - --queue
+      - long,default,short
+    volumes:
+      - sites-vol:/home/frappe/frappe-bench/sites
+      - ./dhanada:/home/frappe/frappe-bench/apps/dhanada
+    restart: unless-stopped
+    depends_on:
+      - configurator
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: docker/frappe/Dockerfile
+      args:
+        FRAPPE_VERSION: v15
+    command:
+      - bench
+      - schedule
+    volumes:
+      - sites-vol:/home/frappe/frappe-bench/sites
+      - ./dhanada:/home/frappe/frappe-bench/apps/dhanada
+    restart: unless-stopped
+    depends_on:
+      - configurator
+
+  # ==========================================
+  # Node.js Services (AI & Frontend)
+  # ==========================================
+  ai-backend:
+    image: node:22-alpine
+    working_dir: /app
+    command: >
+      sh -c "npm install && npm start"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - ./ai_backend:/app
+    ports:
+      - "3405:3405"
+    restart: unless-stopped
+
+  react-frontend:
+    image: node:22-alpine
+    working_dir: /app
+    command: >
+      sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    restart: unless-stopped
+
+volumes:
+  db-data:
+  redis-cache-data:
+  redis-queue-data:
+  redis-socketio-data:
+  sites-vol:
+  assets-vol:
