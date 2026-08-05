@@ -14,7 +14,7 @@ logger = logging.getLogger("sif_sync")
 
 class GitHubClient:
     def __init__(self):
-        self.repo_url = frappe.conf.get("sif_sync_github_repo_url")
+        self.repo_url = frappe.conf.get("sif_sync_github_repo_url", "https://github.com/Satyam4755/AMFI_Fetcher")
         self.branch = frappe.conf.get("sif_sync_github_branch", "main")
         self.token = frappe.conf.get("sif_sync_github_token")
         
@@ -99,6 +99,7 @@ class GitHubClient:
     # 1. SCHEME DETAILS DISCOVERY
     def fetch_scheme_details(self) -> List[Dict[str, Any]]:
         directory = "data/sif/scheme/details"
+        logger.info(f"Using repository: {self.repo_url} (branch: {self.branch})")
         logger.info(f"Fetching scheme details from directory: {directory}")
         
         files = self._list_directory(directory)
@@ -124,6 +125,7 @@ class GitHubClient:
     # 2. DAILY NAV DISCOVERY
     def fetch_latest_nav(self) -> List[Dict[str, Any]]:
         directory = "data/sif/scheme/nav/daily"
+        logger.info(f"Using repository: {self.repo_url} (branch: {self.branch})")
         logger.info(f"Fetching latest NAV from directory: {directory}")
         
         files = self._list_directory(directory)
@@ -164,6 +166,7 @@ class GitHubClient:
     # 3. PERFORMANCE DISCOVERY
     def fetch_performance(self) -> List[Dict[str, Any]]:
         directory = "data/sif/scheme/performance"
+        logger.info(f"Using repository: {self.repo_url} (branch: {self.branch})")
         logger.info(f"Fetching performance data from directory: {directory}")
         
         files = self._list_directory(directory)
