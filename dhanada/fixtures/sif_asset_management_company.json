@@ -1,5 +1,137 @@
 [
  {
+  "amc_name": "Altiva Asset Management",
+  "code": "EDEL",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.734963",
+  "name": "EDEL",
+  "registration_number": "EDEL",
+  "rta": "CAMS",
+  "sif_name": "Altiva"
+ },
+ {
+  "amc_name": "Arthaya Asset Management",
+  "code": "UNIN",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.889977",
+  "name": "UNIN",
+  "registration_number": "UNIN",
+  "rta": "CAMS",
+  "sif_name": "Arthaya"
+ },
+ {
+  "amc_name": "Arudha Asset Management",
+  "code": "BNDN",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.891609",
+  "name": "BNDN",
+  "registration_number": "BNDN",
+  "rta": "CAMS",
+  "sif_name": "Arudha"
+ },
+ {
+  "amc_name": "DynaSIF Asset Management",
+  "code": "360O",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.893012",
+  "name": "360O",
+  "registration_number": "360O",
+  "rta": "CAMS",
+  "sif_name": "DynaSIF"
+ },
+ {
+  "amc_name": "Franklin Templeton Mutual Fund Asset Management",
+  "code": "FTMF",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.894343",
+  "name": "FTMF",
+  "registration_number": "FTMF",
+  "rta": "CAMS",
+  "sif_name": "Franklin Templeton Mutual Fund"
+ },
+ {
+  "amc_name": "Kotak Mahindra Mutual Fund Asset Management",
+  "code": "KOTM",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.900113",
+  "name": "KOTM",
+  "registration_number": "KOTM",
+  "rta": "CAMS",
+  "sif_name": "Kotak Mahindra Mutual Fund"
+ },
+ {
+  "amc_name": "iSIF Asset Management",
+  "code": "ICIC",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.901918",
+  "name": "ICIC",
+  "registration_number": "ICIC",
+  "rta": "CAMS",
+  "sif_name": "iSIF"
+ },
+ {
+  "amc_name": "Magnum Asset Management",
+  "code": "SBIM",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.903451",
+  "name": "SBIM",
+  "registration_number": "SBIM",
+  "rta": "CAMS",
+  "sif_name": "Magnum"
+ },
+ {
+  "amc_name": "qsif Asset Management",
+  "code": "QNTM",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.906552",
+  "name": "QNTM",
+  "registration_number": "QNTM",
+  "rta": "CAMS",
+  "sif_name": "qsif"
+ },
+ {
+  "amc_name": "HSBC Mutual Fund Asset Management",
+  "code": "HSBC",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.907966",
+  "name": "HSBC",
+  "registration_number": "HSBC",
+  "rta": "CAMS",
+  "sif_name": "HSBC Mutual Fund"
+ },
+ {
+  "amc_name": "Titanium Asset Management",
+  "code": "TATA",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.909307",
+  "name": "TATA",
+  "registration_number": "TATA",
+  "rta": "CAMS",
+  "sif_name": "Titanium"
+ },
+ {
   "amc_name": " Edelweiss Mutual Fund",
   "code": "118",
   "docstatus": 0,
@@ -10,5 +142,29 @@
   "registration_number": "MF/057/08/02",
   "rta": "Kfintech",
   "sif_name": "Altiva"
+ },
+ {
+  "amc_name": "The Wealth Company Mutual Fund Asset Management",
+  "code": "TWCF",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.910645",
+  "name": "TWCF",
+  "registration_number": "TWCF",
+  "rta": "CAMS",
+  "sif_name": "The Wealth Company Mutual Fund"
+ },
+ {
+  "amc_name": "Jio BlackRock Mutual Fund Asset Management",
+  "code": "JBMF",
+  "docstatus": 0,
+  "doctype": "SIF Asset Management Company",
+  "is_active": 1,
+  "modified": "2026-08-06 12:19:27.905081",
+  "name": "JBMF",
+  "registration_number": "JBMF",
+  "rta": "CAMS",
+  "sif_name": "Jio BlackRock Mutual Fund"
  }
 ]

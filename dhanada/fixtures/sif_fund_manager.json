@@ -3,35 +3,273 @@
   "docstatus": 0,
   "doctype": "SIF Fund Manager",
   "manager_name": "Bhavesh Jain",
-  "modified": "2026-07-16 15:40:30.659855",
-  "name": 1
+  "modified": "2026-08-06 13:36:01.303806",
+  "name": 45
  },
  {
   "docstatus": 0,
   "doctype": "SIF Fund Manager",
   "manager_name": " Bharat Lahoti",
-  "modified": "2026-07-16 15:40:58.502910",
-  "name": 2
+  "modified": "2026-08-06 13:36:01.312597",
+  "name": 46
  },
  {
   "docstatus": 0,
   "doctype": "SIF Fund Manager",
   "manager_name": " Dhawal Dalal",
-  "modified": "2026-07-16 15:41:05.990589",
-  "name": 3
+  "modified": "2026-08-06 13:36:01.319634",
+  "name": 47
  },
  {
   "docstatus": 0,
   "doctype": "SIF Fund Manager",
   "manager_name": "Kedar Karnik",
-  "modified": "2026-07-16 15:41:16.483646",
-  "name": 4
+  "modified": "2026-08-06 13:36:01.325646",
+  "name": 48
  },
  {
   "docstatus": 0,
   "doctype": "SIF Fund Manager",
   "manager_name": "Amit Vora",
-  "modified": "2026-07-16 15:41:34.697030",
-  "name": 5
+  "modified": "2026-08-06 13:36:01.338355",
+  "name": 49
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Bhavesh Jain; Mr. Bharat Lahoti; Mr. Dhawal Dalal; Mr. Kedar Karnik and Mr. Amit Vora",
+  "modified": "2026-08-06 13:36:01.409589",
+  "name": 50
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Nikhil Gada, Mr. Trideep Bhattacharya, Mr. Amit Vora (Overseas portion)",
+  "modified": "2026-08-06 13:36:01.418258",
+  "name": 51
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Rajesh Aynor, Mr.Hiten Bhadra",
+  "modified": "2026-08-06 13:36:01.440509",
+  "name": 52
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Brijesh Shah, Mr. Debraj Lahiri",
+  "modified": "2026-08-06 13:36:01.451858",
+  "name": 53
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Nilesh Saha",
+  "modified": "2026-08-06 13:36:01.461984",
+  "name": 54
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Brijesh Shah",
+  "modified": "2026-08-06 13:36:01.468823",
+  "name": 55
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Harsh Agarwal, Mr. Milan Mody, Mr. Rahul Khetawat, Mr.Pranav Mise",
+  "modified": "2026-08-06 13:36:01.475628",
+  "name": 56
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Harsh Aggarwal , Mr. Pranav Mise",
+  "modified": "2026-08-06 13:36:01.483727",
+  "name": 57
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Arihant Jain",
+  "modified": "2026-08-06 13:36:01.491584",
+  "name": 58
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Abhishek Bisen",
+  "modified": "2026-08-06 13:36:01.498320",
+  "name": 59
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Arun Ramachandran, Ms. Tanvi Kacheria, Mr. Siddharth Deb, Mr. Virendra Kumar",
+  "modified": "2026-08-06 13:36:01.504750",
+  "name": 60
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Shriram Ramanathan, Praveen Ayathan, Venugopal Manghat, Mayank Chaturvedi",
+  "modified": "2026-08-06 13:36:01.511695",
+  "name": 61
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "1 Suraj Nanda, FM-2 Amit Somani; FM-3 Hasmukh Devji Vishariya",
+  "modified": "2026-08-06 13:36:01.519407",
+  "name": 62
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Chinmay Sathe",
+  "modified": "2026-08-06 13:36:01.527337",
+  "name": 63
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Bhavesh Jain",
+  "modified": "2026-08-06 13:36:01.547052",
+  "name": 64
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Bharat Lahoti",
+  "modified": "2026-08-06 13:36:01.556472",
+  "name": 65
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Dhawal Dalal",
+  "modified": "2026-08-06 13:36:01.563484",
+  "name": 66
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Kedar Karnik",
+  "modified": "2026-08-06 13:36:01.570603",
+  "name": 67
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Amit Vora",
+  "modified": "2026-08-06 13:36:01.576949",
+  "name": 68
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Bhavesh Jain",
+  "modified": "2026-08-06 13:36:01.616328",
+  "name": 69
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Bharat Lahoti",
+  "modified": "2026-08-06 13:36:01.622860",
+  "name": 70
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Dhawal Dalal",
+  "modified": "2026-08-06 13:36:01.629580",
+  "name": 71
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Kedar Karnik",
+  "modified": "2026-08-06 13:36:01.640237",
+  "name": 72
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Amit Vora",
+  "modified": "2026-08-06 13:36:01.650285",
+  "name": 73
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Bhavesh Jain",
+  "modified": "2026-08-06 13:36:01.658285",
+  "name": 74
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Bharat Lahoti",
+  "modified": "2026-08-06 13:36:01.665322",
+  "name": 75
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Dhawal Dalal",
+  "modified": "2026-08-06 13:36:01.671622",
+  "name": 76
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Kedar Karnik",
+  "modified": "2026-08-06 13:36:01.678331",
+  "name": 77
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Amit Vora",
+  "modified": "2026-08-06 13:36:01.685268",
+  "name": 78
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Bhavesh Jain",
+  "modified": "2026-08-06 13:36:01.698642",
+  "name": 79
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Bharat Lahoti",
+  "modified": "2026-08-06 13:36:01.705723",
+  "name": 80
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": " Dhawal Dalal",
+  "modified": "2026-08-06 13:36:01.714726",
+  "name": 81
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Kedar Karnik",
+  "modified": "2026-08-06 13:36:01.722814",
+  "name": 82
+ },
+ {
+  "docstatus": 0,
+  "doctype": "SIF Fund Manager",
+  "manager_name": "Amit Vora",
+  "modified": "2026-08-06 13:36:01.730017",
+  "name": 83
  }
 ]

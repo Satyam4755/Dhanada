@@ -1,0 +1,13 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "CRM Form Script",
+  "dt": "CRM Lead",
+  "enabled": 1,
+  "is_standard": 0,
+  "modified": "2026-08-06 13:50:12.108969",
+  "name": "CRM Lead UI Fix",
+  "script": "\nclass CRMLead {\n    setup() {\n        if (!this._originalDocumentContext.fieldPropertyOverrides) {\n            this._originalDocumentContext.fieldPropertyOverrides = {};\n        }\n        this._originalDocumentContext.fieldPropertyOverrides['chat_summary'] = {\n            fieldtype: 'HTML',\n            options: '<div class=\"text-sm text-ink-gray-9 leading-relaxed\">{{ chat_summary }}</div>'\n        };\n    }\n}\n    ",
+  "view": "Form"
+ }
+]

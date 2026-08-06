@@ -87,6 +87,7 @@ app_license = "mit"
 
 # before_install = "dhanada.install.before_install"
 # after_install = "dhanada.install.after_install"
+after_migrate = "dhanada.utils.patch_crm_layout.patch_layout"
 
 # Uninstallation
 # ------------
@@ -250,4 +251,6 @@ fixtures = [
 	"SIF Asset Management Company",
 	"SIF Fund Manager",
 	"SIF Investment Stategy Subcategory",
+	{"dt": "Custom Field", "filters": [["dt", "=", "CRM Lead"]]},
+	{"dt": "CRM Form Script", "filters": [["name", "=", "CRM Lead UI Fix"]]}
 ]
