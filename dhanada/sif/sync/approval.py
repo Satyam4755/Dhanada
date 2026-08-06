@@ -145,3 +145,22 @@ def process_approval(approval_doc):
     scheme_doc.save(ignore_permissions=True)
 
     return approval_doc
+
+
+def revert_approval(approval_doc):
+    """
+    Reverts the applied changes from a SIF Scheme Approval
+    document back onto the linked SIF Scheme document.
+    """
+    scheme_doc = frappe.get_doc("SIF Scheme", approval_doc.scheme)
+
+    for item in approval_doc.get("changed_fields", []):
+        if item.apply_change:
+            # Revert to the old value
+            raw_value = item.old_value
+            _write_field_to_scheme(scheme_doc, item.field_name, raw_value)
+
+    scheme_doc.flags.ignore_version = True
+    scheme_doc.save(ignore_permissions=True)
+
+    return approval_doc

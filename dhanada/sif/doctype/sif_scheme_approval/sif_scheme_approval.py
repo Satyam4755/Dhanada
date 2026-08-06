@@ -15,6 +15,10 @@ class SIFSchemeApproval(Document):
 		self.db_set("approved_by", frappe.session.user)
 		self.db_set("approved_on", now_datetime())
 
+	def on_cancel(self):
+		from dhanada.sif.sync.approval import revert_approval
+		revert_approval(self)
+
 	def onload(self):
 		from dhanada.sif.sync.constants import EDITABLE_FIELDS
 		self.set_onload("editable_fields", EDITABLE_FIELDS)

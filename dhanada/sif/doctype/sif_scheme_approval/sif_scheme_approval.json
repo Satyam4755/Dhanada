@@ -2,7 +2,7 @@
  "actions": [],
  "allow_bulk_edit": 1,
  "allow_rename": 1,
- "autoname": "SAP-{#####}",
+ "autoname": "SAP-.#####",
  "creation": "2026-07-28 12:59:22.851515",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -60,7 +60,6 @@
  "modified_by": "Administrator",
  "module": "SIF",
  "name": "SIF Scheme Approval",
- "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -74,7 +73,8 @@
    "role": "System Manager",
    "share": 1,
    "write": 1,
-   "submit": 1
+   "submit": 1,
+   "cancel": 1
   }
  ],
  "row_format": "Dynamic",

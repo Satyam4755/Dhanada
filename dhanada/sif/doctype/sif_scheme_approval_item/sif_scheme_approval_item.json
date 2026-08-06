@@ -7,11 +7,11 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "apply_change",
   "field_name",
   "old_value",
   "new_value",
-  "override_value",
-  "apply_change"
+  "override_value"
  ],
  "fields": [
   {
@@ -20,28 +20,32 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Field Name",
-   "reqd": 1
+   "reqd": 1,
+   "columns": 2
   },
   {
    "description": "Previous value from SIF Scheme",
    "fieldname": "old_value",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Old Value"
+   "label": "Old Value",
+   "columns": 2
   },
   {
    "description": "Incoming value from AMFI",
    "fieldname": "new_value",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "New Value"
+   "label": "New Value",
+   "columns": 2
   },
   {
    "description": "Optional correction to new_value",
    "fieldname": "override_value",
    "fieldtype": "Small Text",
    "in_list_view": 1,
-   "label": "Override Value"
+   "label": "Override Value",
+   "columns": 2
   },
   {
    "default": "0",
@@ -49,7 +53,8 @@
    "fieldname": "apply_change",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Apply Change"
+   "label": "Apply Change",
+   "columns": 1
   }
  ],
  "grid_page_length": 50,
