@@ -97,9 +97,24 @@ class DataImporter:
             self.stats["errors"] += 1
             log_error(f"Failed to upsert Subcategory {sub.subcategory_name}: {e}", exc_info=True)
 
+    def _get_existing_fund_manager(self, manager_name):
+        import re
+        exists = frappe.db.exists("SIF Fund Manager", {"manager_name": manager_name})
+        if exists: return exists
+        
+        # Check normalized match
+        norm = re.sub(r'[^a-z0-9]', '', str(manager_name).lower())
+        if not norm: return None
+        
+        managers = frappe.db.get_all("SIF Fund Manager", fields=["name", "manager_name"])
+        for m in managers:
+            if re.sub(r'[^a-z0-9]', '', str(m.manager_name).lower()) == norm:
+                return m.name
+        return None
+
     def _upsert_fund_manager(self, fm):
         try:
-            exists = frappe.db.exists("SIF Fund Manager", {"manager_name": fm.manager_name})
+            exists = self._get_existing_fund_manager(fm.manager_name)
             if exists:
                 self.stats["skipped"] += 1 # Nothing to update
             else:
@@ -221,7 +236,7 @@ class DataImporter:
 
         doc.set("managers", [])
         for mgr in scheme.managers:
-            fm_doc = frappe.db.exists("SIF Fund Manager", {"manager_name": mgr.manager_name})
+            fm_doc = self._get_existing_fund_manager(mgr.manager_name)
             if fm_doc:
                 doc.append("managers", {
                     "manager_name": fm_doc,

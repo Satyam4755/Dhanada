@@ -81,6 +81,16 @@ def compare_scheme(existing_doc, incoming_scheme: Scheme) -> list:
             for m in incoming_scheme.managers:
                 # Resolve manager_name identical to how importer maps it
                 fm_doc = frappe.db.exists("SIF Fund Manager", {"manager_name": m.manager_name})
+                if not fm_doc:
+                    import re
+                    norm = re.sub(r'[^a-z0-9]', '', str(m.manager_name).lower())
+                    if norm:
+                        managers_in_db = frappe.db.get_all("SIF Fund Manager", fields=["name", "manager_name"])
+                        for db_m in managers_in_db:
+                            if re.sub(r'[^a-z0-9]', '', str(db_m.manager_name).lower()) == norm:
+                                fm_doc = db_m.name
+                                break
+                
                 if fm_doc:
                     new_mgrs.append({
                         "manager_name": normalize_str(fm_doc),

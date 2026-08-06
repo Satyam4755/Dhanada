@@ -157,46 +157,77 @@ class DataMapper:
     def _parse_managers(self, raw_managers_list: List[Dict], dataset: SyncDataset) -> List[SchemeFundManager]:
         parsed_managers = []
         
-        # Regex helpers to strip labels and titles, and extract standard dates
-        label_pattern = re.compile(r'(?i)(Debt|Equity|Arbitrage)\s+Portion\s*[:\-]?\s*|\(for.*?portion\)|\bFM\s*\d+\s*[:\-]\s*')
-        title_pattern = re.compile(r'^(Mr\.|Ms\.|Mrs\.|Dr\.|Mr|Ms|Mrs|Dr)\s*', flags=re.IGNORECASE)
+        # Regex helpers to extract standard dates
         date_pattern = re.compile(r'(\d{2}-[a-zA-Z]{3}-\d{4}|\d{2}-\d{2}-\d{4}|[a-zA-Z]+\s+\d{2},\s+\d{4}|\d{4}-\d{2}-\d{2}(\s+\d{2}:\d{2}:\d{2})?)')
+        
+        # Pattern to capture trailing portions like "(Overseas portion)" or "Debt Portion"
+        portion_extract_pattern = re.compile(r'(?i)(\([^)]*portion\)|Debt\s+Portion|Equity\s+Portion|Arbitrage\s+Portion)')
+        
+        # Pattern to strip labels and titles from the front or within the name
+        label_pattern = re.compile(r'(?i)(Debt|Equity|Arbitrage)\s+Portion\s*[:\-]?\s*|\(for.*?portion\)|\bFM\s*\d+\s*[:\-]?\s*')
+        title_pattern = re.compile(r'^(Mr\.|Ms\.|Mrs\.|Dr\.|Mr|Ms|Mrs|Dr)\s*', flags=re.IGNORECASE)
         
         for fm in raw_managers_list:
             raw_name = fm.get("name", "") or ""
             raw_from = fm.get("from", "") or ""
             raw_to = fm.get("to")
             
-            # Clean up labels and titles from name
-            clean_name = label_pattern.sub('', raw_name).strip()
-            clean_name = title_pattern.sub('', clean_name).strip()
-            if not clean_name: continue
-            
-            # Truncate to 140 chars to satisfy Frappe Link field limits for malformed upstream data
-            clean_name = clean_name[:140].strip()
-            
-            # Parse dates
-            parsed_from_date = None
-            if raw_from:
-                match_from = date_pattern.search(str(raw_from))
-                if match_from:
-                    parsed_from_date = self._parse_date(match_from.group(1))
-                    
+            # 1. Parse dates (from and to)
+            # Some strings might have multiple dates, we split them roughly by same delimiters as names
+            from_chunks = [c.strip() for c in re.split(r';|,|\band\b|&|\n', str(raw_from), flags=re.IGNORECASE) if c.strip()]
+            from_dates = []
+            for fc in from_chunks:
+                match = date_pattern.search(fc)
+                from_dates.append(self._parse_date(match.group(1)) if match else None)
+                
             parsed_to_date = None
             if raw_to:
                 match_to = date_pattern.search(str(raw_to))
                 if match_to:
                     parsed_to_date = self._parse_date(match_to.group(1))
-
-            dataset.fund_managers.append(FundManager(manager_name=clean_name))
-            parsed_managers.append(SchemeFundManager(
-                manager_name=clean_name,
-                manager_type=fm.get("type"),
-                role_or_portion=fm.get("role_or_portion"),
-                from_date=parsed_from_date,
-                to_date=parsed_to_date,
-                is_active=True if not parsed_to_date else False
-            ))
+            
+            # 2. Split raw name into individual managers
+            name_chunks = [c.strip() for c in re.split(r';|,|\band\b|&|\n', raw_name, flags=re.IGNORECASE) if c.strip()]
+            
+            for i, chunk in enumerate(name_chunks):
+                # Extract portion if present in this specific chunk
+                extracted_portion = None
+                portion_match = portion_extract_pattern.search(chunk)
+                if portion_match:
+                    extracted_portion = portion_match.group(1).strip("() ")
+                    chunk = portion_extract_pattern.sub('', chunk) # Remove it from the chunk
+                
+                # Use provided role_or_portion if extracted is missing
+                final_portion = extracted_portion or fm.get("role_or_portion")
+                
+                # Clean up labels and titles
+                clean_name = label_pattern.sub('', chunk).strip()
+                clean_name = title_pattern.sub('', clean_name).strip()
+                
+                if not clean_name: 
+                    continue
+                
+                # Truncate to 140 chars to satisfy Frappe Link field limits for malformed upstream data
+                clean_name = clean_name[:140].strip()
+                
+                # Determine date
+                parsed_from_date = None
+                if len(from_dates) == len(name_chunks):
+                    parsed_from_date = from_dates[i]
+                elif len(from_dates) == 1:
+                    parsed_from_date = from_dates[0]
+                elif len(from_dates) > i:
+                    parsed_from_date = from_dates[i]
+                    
+                dataset.fund_managers.append(FundManager(manager_name=clean_name))
+                parsed_managers.append(SchemeFundManager(
+                    manager_name=clean_name,
+                    manager_type=fm.get("type"),
+                    role_or_portion=final_portion,
+                    from_date=parsed_from_date,
+                    to_date=parsed_to_date,
+                    is_active=True if not parsed_to_date else False
+                ))
                 
         return parsed_managers
 
