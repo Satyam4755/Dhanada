@@ -86,8 +86,11 @@ app_license = "mit"
 # ------------
 
 # before_install = "dhanada.install.before_install"
-# after_install = "dhanada.install.after_install"
-after_migrate = "dhanada.utils.patch_crm_layout.patch_layout"
+after_install = "dhanada.setup.bootstrap.after_install"
+after_migrate = [
+	"dhanada.utils.patch_crm_layout.patch_layout",
+	"dhanada.setup.bootstrap.after_migrate"
+]
 
 # Uninstallation
 # ------------
