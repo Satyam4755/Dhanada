@@ -7,10 +7,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { getRiskLevelConfig } from '../utils/risk'
+import { useLeadModal } from '../context/LeadModalContext'
 
 export default function FeaturedFund({ fund }) {
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.2 })
   const navigate = useNavigate()
+  const { openLeadModal } = useLeadModal()
 
   if (!fund) return null;
 
@@ -73,7 +75,7 @@ export default function FeaturedFund({ fund }) {
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                  <button onClick={(e) => { e.stopPropagation(); handleFundClick(); }}
+                  <button onClick={(e) => { e.stopPropagation(); openLeadModal(); }}
                     className="btn-ripple flex items-center gap-2 px-6 py-3 rounded-full bg-white text-[#032e92] font-semibold hover:bg-blue-50 shadow-lg transition-all duration-200 hover:-translate-y-0.5">
                     <FontAwesomeIcon icon={faArrowRight} />
                     Invest Now

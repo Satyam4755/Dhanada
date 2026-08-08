@@ -7,6 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useInView } from 'react-intersection-observer'
 import { stats } from '../data/data'
+import { useLeadModal } from '../context/LeadModalContext'
 
 const floatingCards = [
   {
@@ -67,6 +68,8 @@ const StatCard = ({ prefix, value, suffix, label, delay }) => {
 }
 
 export default function Hero() {
+  const { openLeadModal } = useLeadModal()
+
   return (
     <section id="home" className="relative min-h-screen overflow-hidden">
       {/* Gradient Background */}
@@ -116,11 +119,11 @@ export default function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               className="flex flex-wrap gap-4 mb-12">
-              <a href="#invest"
+              <button onClick={openLeadModal}
                 className="btn-ripple flex items-center gap-2 px-8 py-4 rounded-full bg-[#c10000] hover:bg-[#9d0000] text-white font-semibold shadow-xl shadow-red-900/30 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
                 <FontAwesomeIcon icon={faCircleArrowRight} />
                 Start Investing
-              </a>
+              </button>
               <a href="#top-funds"
                 className="flex items-center gap-2 px-8 py-4 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white font-semibold transition-all duration-300 hover:-translate-y-1">
                 <FontAwesomeIcon icon={faChartLine} />

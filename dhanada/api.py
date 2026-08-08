@@ -279,3 +279,44 @@ def create_chatbot_lead():
         frappe.log_error(message=frappe.get_traceback(), title="Chatbot Lead Creation Failed")
         frappe.throw(f"Failed to create Lead: {str(e)}")
 
+@frappe.whitelist(allow_guest=True)
+def create_website_lead():
+    try:
+        full_name = frappe.form_dict.get("full_name", "").strip()
+        email = frappe.form_dict.get("email", "").strip()
+        phone = frappe.form_dict.get("phone", "").strip()
+        
+        if not full_name:
+            frappe.throw("Full Name is a required field.")
+            
+        if not email and not phone:
+            frappe.throw("Please provide either your email address or phone number.")
+            
+        first_name = full_name
+        last_name = ""
+        
+        if " " in full_name:
+            parts = full_name.split(" ", 1)
+            first_name = parts[0]
+            last_name = parts[1]
+            
+        doc_data = {
+            "doctype": "CRM Lead",
+            "first_name": first_name,
+            "last_name": last_name,
+            "email": email,
+            "mobile_no": phone,
+            "source": "Website Form"
+        }
+        
+        lead = frappe.get_doc(doc_data)
+        lead.insert(ignore_permissions=True)
+        frappe.db.commit()
+        
+        return {"success": True, "lead_name": lead.name}
+    except Exception as e:
+        frappe.log_error(message=frappe.get_traceback(), title="Website Lead Creation Failed")
+        # Return error cleanly to frontend
+        frappe.local.response['http_status_code'] = 400
+        return {"success": False, "message": str(e)}
+

@@ -8,11 +8,13 @@ import {
   faArrowRight, faBookmark, faShareNodes, faFileArrowDown,
   faBuildingColumns, faCircleCheck
 } from '@fortawesome/free-solid-svg-icons'
+import { useLeadModal } from '../context/LeadModalContext'
 
 export default function FundSummaryCard({ fund }) {
   const [bookmarked, setBookmarked] = useState(false)
   const navigate = useNavigate()
   const risk = getRiskLevelConfig(fund.riskLevel)
+  const { openLeadModal } = useLeadModal()
   
   const formatPct = (val) => val === 'N/A' || val == null ? 'N/A' : `${val}%`
 
@@ -114,6 +116,7 @@ export default function FundSummaryCard({ fund }) {
       {/* CTA Buttons */}
       <div className="px-5 pb-5 space-y-2">
         <motion.button
+          onClick={() => openLeadModal()}
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
           className="w-full py-3 rounded-2xl bg-[#032e92] text-white font-bold text-sm hover:bg-[#021d63] shadow-lg shadow-blue-900/25 transition-all flex items-center justify-center gap-2">
           <FontAwesomeIcon icon={faArrowRight} />

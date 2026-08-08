@@ -23,6 +23,7 @@ def ensure_crm_sources():
     """
     required_sources = [
         "Website Chatbot",
+        "Website Form",
         "Website",
         "WhatsApp",
         "Referral",

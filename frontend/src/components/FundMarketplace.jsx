@@ -6,6 +6,7 @@ import { faArrowRight, faStar, faBookmark, faArrowTrendUp } from '@fortawesome/f
 import { faBookmark as faBookmarkRegular } from '@fortawesome/free-regular-svg-icons'
 import { useNavigate } from 'react-router-dom'
 import { getRiskLevelConfig } from '../utils/risk'
+import { useLeadModal } from '../context/LeadModalContext'
 
 const riskColors = {
   'Low': 'bg-green-100 text-green-700',
@@ -17,6 +18,7 @@ export default function FundMarketplace({ fundsData = [] }) {
   const [bookmarked, setBookmarked] = useState([])
   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 })
   const navigate = useNavigate()
+  const { openLeadModal } = useLeadModal()
 
   const toggleBookmark = (id) => {
     setBookmarked(prev =>
@@ -132,7 +134,7 @@ export default function FundMarketplace({ fundsData = [] }) {
               {/* Card Footer */}
               <div className="px-6 pb-6 flex gap-3">
                 <button 
-                  onClick={() => handleFundClick(fund.id)}
+                  onClick={() => openLeadModal()}
                   className="flex-1 py-3 rounded-2xl bg-[#032e92] text-white text-sm font-semibold hover:bg-[#021d63] shadow-md shadow-blue-900/20 transition-all duration-200 flex items-center justify-center gap-2 group-hover:gap-3">
                   Invest Now <FontAwesomeIcon icon={faArrowRight} className="text-xs" />
                 </button>

@@ -6,6 +6,7 @@ import {
   faChartLine
 } from '@fortawesome/free-solid-svg-icons'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useLeadModal } from '../context/LeadModalContext'
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -27,10 +28,7 @@ const navLinks = [
       { label: 'Retirement Calculator', href: '/calculators/retirement' },
     ]
   },
-  // { label: 'Research', href: '/#research' },
   { label: 'Blog', href: '/#blog' },
-  // { label: 'About', href: '/#about' },
-  // { label: 'Contact', href: '/#contact' },
 ]
 
 export default function Navbar() {
@@ -38,6 +36,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
   const location = useLocation()
+  const { openLeadModal } = useLeadModal()
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30)
@@ -46,8 +45,7 @@ export default function Navbar() {
   }, [])
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-white shadow-lg shadow-blue-900/10' : 'bg-white'
-      }`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-white shadow-lg shadow-blue-900/10' : 'bg-white'}`}>
       <nav className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -58,8 +56,7 @@ export default function Navbar() {
             <div>
               <span className="text-xl font-bold text-[#032e92]">SIF</span>
               <span className="text-xl font-bold text-[#c10000]">invest</span>
-              <p className={`text-[9px] font-medium tracking-wider uppercase leading-none ${scrolled ? 'text-gray-400' : 'text-gray-300'
-                }`}>Smart Investment Fund</p>
+              <p className={`text-[9px] font-medium tracking-wider uppercase leading-none ${scrolled ? 'text-gray-400' : 'text-gray-300'}`}>Smart Investment Fund</p>
             </div>
           </Link>
 
@@ -76,8 +73,7 @@ export default function Navbar() {
                     }`}>
                   {link.label}
                   {link.dropdown && (
-                    <FontAwesomeIcon icon={faChevronDown} className={`text-[10px] transition-transform duration-200 ${activeDropdown === link.label ? 'rotate-180' : ''
-                      }`} />
+                    <FontAwesomeIcon icon={faChevronDown} className={`text-[10px] transition-transform duration-200 ${activeDropdown === link.label ? 'rotate-180' : ''}`} />
                   )}
                 </Link>
                 {link.dropdown && (
@@ -105,12 +101,10 @@ export default function Navbar() {
 
           {/* Right Actions */}
           <div className="hidden lg:flex items-center gap-3">
-            <button className={`w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-[#eef4ff] hover:text-[#032e92] ${scrolled ? 'text-gray-600' : 'text-gray-700'
-              }`}>
+            <button className={`w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-[#eef4ff] hover:text-[#032e92] ${scrolled ? 'text-gray-600' : 'text-gray-700'}`}>
               <FontAwesomeIcon icon={faMagnifyingGlass} className="text-sm" />
             </button>
-            <button className={`w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-[#eef4ff] hover:text-[#032e92] ${scrolled ? 'text-gray-600' : 'text-gray-700'
-              }`}>
+            <button className={`w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-[#eef4ff] hover:text-[#032e92] ${scrolled ? 'text-gray-600' : 'text-gray-700'}`}>
               <FontAwesomeIcon icon={faBell} className="text-sm" />
             </button>
             <a href="#login" className={`px-5 py-2 rounded-full text-sm font-semibold border-2 transition-all duration-200 hover:shadow-md ${scrolled
@@ -119,9 +113,9 @@ export default function Navbar() {
               }`}>
               Login
             </a>
-            <a href="#invest" className="btn-ripple px-5 py-2 rounded-full text-sm font-semibold bg-[#032e92] text-white hover:bg-[#021d63] shadow-lg shadow-blue-900/30 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
+            <button onClick={openLeadModal} className="btn-ripple px-5 py-2 rounded-full text-sm font-semibold bg-[#032e92] text-white hover:bg-[#021d63] shadow-lg shadow-blue-900/30 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5">
               Invest Now
-            </a>
+            </button>
           </div>
 
           {/* Mobile Toggle */}
@@ -149,7 +143,7 @@ export default function Navbar() {
                 ))}
                 <div className="pt-3 flex gap-3">
                   <a href="#login" className="flex-1 text-center py-2.5 rounded-xl border-2 border-[#032e92] text-[#032e92] text-sm font-semibold">Login</a>
-                  <a href="#invest" className="flex-1 text-center py-2.5 rounded-xl bg-[#032e92] text-white text-sm font-semibold">Invest Now</a>
+                  <button onClick={() => { setMobileOpen(false); openLeadModal(); }} className="flex-1 text-center py-2.5 rounded-xl bg-[#032e92] text-white text-sm font-semibold">Invest Now</button>
                 </div>
               </div>
             </motion.div>
