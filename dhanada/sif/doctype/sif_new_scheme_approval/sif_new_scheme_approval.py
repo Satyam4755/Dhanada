@@ -1,0 +1,69 @@
+# Copyright (c) 2026, KNAPS Private Limited and contributors
+# For license information, please see license.txt
+
+import frappe
+from frappe.model.document import Document
+import json
+
+
+class SIFNewSchemeApproval(Document):
+	_DOCTYPE_NAME = "SIF New Scheme Approval"
+
+	def on_submit(self):
+		# Generate the actual SIF Scheme
+		scheme_doc = frappe.new_doc("SIF Scheme")
+		
+		# Copy fields
+		for field in self.meta.fields:
+			if field.fieldtype not in ("Table", "Table MultiSelect"):
+				if scheme_doc.meta.has_field(field.fieldname) and field.fieldname not in ('name', 'amended_from'):
+					scheme_doc.set(field.fieldname, self.get(field.fieldname))
+					
+		# Copy child tables
+		for table_field in ["allocations", "managers"]:
+			for row in self.get(table_field, []):
+				new_row = row.as_dict().copy()
+				for key in ["name", "parent", "parenttype", "parentfield", "creation", "modified", "owner", "modified_by"]:
+					new_row.pop(key, None)
+				scheme_doc.append(table_field, new_row)
+				
+		# Bypass direct-creation safety net
+		scheme_doc.flags.from_approval = True
+		scheme_doc.insert(ignore_permissions=True)
+		
+		# Link it back
+		self.db_set('scheme', scheme_doc.name)
+		
+	def on_cancel(self):
+		pass # Natively cancelled, no further action required.
+
+@frappe.whitelist()
+def create_approval_from_ui(data):
+	"""
+	Safely intercepts a UI request to create a New Scheme 
+	and converts it into a SIF New Scheme Approval document.
+	"""
+	if isinstance(data, str):
+		data = json.loads(data)
+		
+	approval_doc = frappe.new_doc("SIF New Scheme Approval")
+	
+	# Set simple fields
+	for field in approval_doc.meta.fields:
+		if field.fieldtype not in ("Table", "Table MultiSelect"):
+			if field.fieldname in data:
+				approval_doc.set(field.fieldname, data.get(field.fieldname))
+				
+	# Handle child tables dynamically
+	for field in approval_doc.meta.fields:
+		if field.fieldtype in ("Table", "Table MultiSelect"):
+			if field.fieldname in data:
+				for row in data.get(field.fieldname, []):
+					new_row = dict(row)
+					for key in ["name", "parent", "parenttype", "parentfield", "creation", "modified", "owner", "modified_by"]:
+						new_row.pop(key, None)
+					approval_doc.append(field.fieldname, new_row)
+				
+	approval_doc.insert(ignore_permissions=True)
+	return approval_doc.name
+

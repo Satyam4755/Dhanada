@@ -179,11 +179,16 @@ class DataImporter:
                     self.stats["updated"] += 1
             else:
                 if not self.dry_run:
-                    doc = frappe.new_doc("SIF Scheme")
-                    doc.sebi_code = scheme.sebi_code
-                    self._map_scheme_fields(doc, scheme, amc_doc)
-                    doc.insert(ignore_permissions=True)
-                self.stats["created"] += 1
+                    pending = frappe.db.exists("SIF New Scheme Approval", {"sebi_code": scheme.sebi_code, "docstatus": 0})
+                    if not pending:
+                        doc = frappe.new_doc("SIF New Scheme Approval")
+                        doc.sebi_code = scheme.sebi_code
+                        self._map_scheme_fields(doc, scheme, amc_doc)
+                        doc.insert(ignore_permissions=True)
+                        self.stats["approvals_requested"] += 1
+                    else:
+                        self.stats["skipped"] += 1
+                        log_warning(f"Skipping new scheme {scheme.sebi_code} - New Scheme Approval already pending")
 
             if not self.dry_run:
                 frappe.db.commit()
